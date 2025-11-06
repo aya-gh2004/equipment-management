@@ -21,6 +21,7 @@ djangorestframework==3.15.2
 et_xmlfile==2.0.0
 filelock==3.17.0
 fonttools==4.60.1
+gunicorn==23.0.0
 html5lib==1.1
 idna==3.10
 joblib==1.5.2
