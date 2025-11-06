@@ -17,8 +17,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # ================================
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "django-insecure-xtpu-yw(rmzgp)iash9y)!d)!eql8@&+@f3rhri=o75!_bt5)n")
 DEBUG = True
-ALLOWED_HOSTS = ["127.0.0.1", "localhost","*"]
-ALLOWED_HOSTS = ['equipment-management-tpse.onrender.com', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = [
+    'equipment-management-tpse.onrender.com',
+    'equipment-management-2.onrender.com',
+    'localhost',
+    '127.0.0.1'
+]
+
 
 # ================================
 # 👤 Authentification
