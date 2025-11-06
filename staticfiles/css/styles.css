@@ -1,0 +1,85 @@
+/* تنسيق أساسي للصفحة */
+body {
+    background-color: #f8f9fa8e;
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center; /* توسيط الحاوية أفقيًا */
+    align-items: center; /* توسيط الحاوية عموديًا */
+    height: 100vh; /* جعل الصفحة تأخذ ارتفاع الشاشة بالكامل */
+}
+/* تصميم الحاوية الرئيسية مع تغيير الحجم */
+.container {
+    max-width: 800px; /* تغيير الحجم إلى 800px */
+    width: 100%; /* لتوسيع العرض بشكل كامل */
+    height: 500px; /* تحديد ارتفاع الإطار */
+    background: url("{% static 'equipment/images/aaa.jpg' %}") no-repeat center center; /* تعيين الصورة كخلفية */
+    background-size: cover; /* جعل الصورة تغطي الخلفية بالكامل */
+    padding: 40px; /* إضافة padding أكبر */
+    border-radius: 8px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    color: rgb(15, 15, 15); /* تغيير لون النص إلى الأبيض */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* توسيط المحتوى عموديًا */
+    text-align: center;
+}
+
+/* تنسيق العناوين */
+h2, h3 {
+    color: #25993e;
+    font-weight: bold;
+}
+
+/* تنسيق النموذج */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center; /* جعل العناصر في المنتصف */
+}
+
+label {
+    font-weight: bold;
+}
+
+input[type="text"] {
+    width: 100%; /* جعل الإدخال يأخذ العرض الكامل */
+    padding: 10px;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+/* تنسيق زر البحث */
+button {
+    width: 100%;
+    background-color: #108619;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #29c04f;
+}
+
+/* تنسيق الفيديو الخاص بالماسح الضوئي */
+video {
+    display: block;
+    margin: 20px auto;
+    border: 2px solid #189b29;
+    border-radius: 8px;
+}
+
+/* تنسيق الصورة */
+img {
+    max-width: 100%;
+    height: auto;
+    margin: 20px auto;
+    display: block;
+}

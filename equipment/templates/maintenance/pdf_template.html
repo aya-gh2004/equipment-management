@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      font-family: DejaVu Sans, Arial, sans-serif;
+      font-size: 11px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th, td {
+      border: 1px solid #333;
+      padding: 5px;
+      text-align: center;
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+
+    th {
+      background-color: #f2f2f2;
+    }
+  </style>
+</head>
+<body>
+  <h2 style="text-align: center;">Liste des maintenances</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Machine</th>
+        <th>Type</th>
+        <th>État</th>
+        <th>Coût</th>
+        <th>Date de début</th>
+        <th>Date de fin</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for m in maintenances %}
+      <tr>
+        <td>{{ m.machine.name|default:"(Nom absent)" }}</td>
+
+        <td>{{ m.type }}</td>
+        <td>{{ m.status }}</td>
+        <td>{{ m.cost|default:"0.00" }} DA</td>
+        <td>{{ m.date_debut|date:"d F Y"|default:"-" }}</td>
+        <td>{{ m.date_fin|date:"d F Y"|default:"-" }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</body>
+</html>

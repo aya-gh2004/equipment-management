@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>État des équipements</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Roboto', sans-serif;
+      margin: 0;
+      padding: 40px 20px;
+      background: linear-gradient(135deg, #e8f0ff, #f0f6ff);
+      color: #1a1a1a;
+    }
+
+    h2 {
+      text-align: center;
+      font-size: 32px;
+      margin-bottom: 50px;
+      color: #003366;
+      position: relative;
+    }
+
+    h2::after {
+      content: '';
+      display: block;
+      width: 60px;
+      height: 4px;
+      margin: 10px auto 0;
+      background-color: #00bcd4;
+      border-radius: 2px;
+    }
+
+    .dashboard {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 25px;
+      justify-content: center;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+      padding: 30px 20px;
+      width: 220px;
+      text-align: center;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .card i {
+      font-size: 30px;
+      margin-bottom: 15px;
+      color: #00bcd4;
+      transition: transform 0.3s ease;
+    }
+
+    .card:hover i {
+      transform: scale(1.2);
+    }
+
+    .card h5 {
+      font-size: 16px;
+      color: #555;
+      margin-bottom: 8px;
+    }
+
+    .card p {
+      font-size: 24px;
+      font-weight: bold;
+      color: #003366;
+      margin: 0;
+    }
+
+    .filter-section {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
+      margin: 40px auto;
+      max-width: 800px;
+    }
+
+    .filter-section input[type="date"] {
+      padding: 10px 15px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+      width: 180px;
+      transition: 0.3s;
+    }
+
+    .filter-section input:focus {
+      border-color: #00bcd4;
+      outline: none;
+      box-shadow: 0 0 6px rgba(0, 188, 212, 0.4);
+    }
+
+    .filter-section button {
+      padding: 10px 20px;
+      background-color: #00bcd4;
+      border: none;
+      color: white;
+      font-size: 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .filter-section button:hover {
+      background-color: #0097a7;
+    }
+
+    @media (max-width: 768px) {
+      .card {
+        width: 90%;
+      }
+    }
+
+    h2 i {
+      color: #00bcd4;
+      margin-right: 10px;
+      font-size: 28px;
+      vertical-align: middle;
+    }
+
+    .charts-section {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 25px;
+      justify-content: center;
+      margin-top: 40px;
+    }
+
+    .chart-card {
+      background: #ffffff;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.07);
+      padding: 25px;
+      flex: 1 1 300px;
+      max-width: 450px;
+      min-width: 280px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .chart-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
+    }
+
+    .chart-card.wide {
+      flex: 1 1 100%;
+      max-width: 900px;
+    }
+
+    .chart-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 15px;
+      gap: 10px;
+    }
+
+    .chart-header i {
+      color: #00bcd4;
+      font-size: 20px;
+    }
+
+    .chart-header h5 {
+      font-size: 18px;
+      color: #003366;
+      margin: 0;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    canvas {
+      max-height: 180px !important;
+    }
+
+    .section-card {
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+      padding: 20px 25px;
+      margin-top: 30px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .section-header i {
+      color: #00bcd4;
+      font-size: 20px;
+    }
+
+    .section-header h5 {
+      margin: 0;
+      font-size: 18px;
+      color: #2c3e50;
+      font-weight: 600;
+    }
+
+    .styled-list {
+      list-style: none;
+      padding-left: 0;
+      margin: 0;
+    }
+
+    .styled-list li {
+      background: #f9f9f9;
+      border-left: 5px solid #00bcd4;
+      padding: 12px 15px;
+      margin-bottom: 10px;
+      border-radius: 10px;
+      transition: background 0.3s ease;
+    }
+
+    .styled-list li:hover {
+      background: #eef9fd;
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+      margin-top: 20px;
+    }
+
+    .styled-table {
+      width: 100%;
+      border-collapse: collapse;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .styled-table thead {
+      background-color: #00bcd4;
+      color: white;
+    }
+
+    .styled-table th,
+    .styled-table td {
+      padding: 12px 15px;
+      text-align: center;
+    }
+
+    .styled-table tbody tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+
+    .styled-table tbody tr:hover {
+      background-color: #e0f7fa;
+    }
+
+    .btn-home {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px;
+      border-radius: 25px;
+      background: linear-gradient(135deg, #00bcd4, #2196f3);
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+      box-shadow: 0 4px 12px rgba(0, 188, 212, 0.25);
+      transition: all 0.3s ease;
+      border: none;
+    }
+
+    .btn-home i {
+      font-size: 16px;
+    }
+
+    .btn-home:hover {
+      background: linear-gradient(135deg, #0097a7, #1976d2);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(33, 150, 243, 0.3);
+    }
+  </style>
+</head>
+
+<body>
+  <a href="{% url 'dashboard' %}" class="btn-home">
+    <i class="fa-solid fa-house"></i> Accueil
+  </a>
+
+  <h2><i class="fas fa-chart-bar"></i> Vue d'ensemble de l'état des équipements</h2>
+
+  <div class="dashboard">
+    <div class="card">
+      <i class="fas fa-cogs"></i>
+      <h5>Total équipements</h5>
+      <p id="total_equipements">...</p>
+    </div>
+    <div class="card">
+      <i class="fas fa-exclamation-triangle"></i>
+      <h5>Équipements en panne</h5>
+      <p id="broken_equipements">...</p>
+    </div>
+    <div class="card">
+      <i class="fas fa-wrench"></i>
+      <h5>Entretiens récents</h5>
+      <p id="last_maintenance_count">...</p>
+    </div>
+    <div class="card">
+      <i class="fas fa-clock"></i>
+      <h5>MTBF (jours)</h5>
+      <p id="mtbf_days">...</p>
+    </div>
+    <div class="card">
+      <i class="fas fa-stopwatch"></i>
+      <h5>Durée moyenne maintenance (h)</h5>
+      <p id="avg_maintenance_hours">...</p>
+    </div>
+  </div>
+
+  <div class="filter-section">
+    <input type="date" id="startDate" />
+    <input type="date" id="endDate" />
+    <button onclick="fetchDashboardData()">Filtrer</button>
+  </div>
+  <div class="charts-section">
+    <!-- Répartition des équipements par état -->
+    <div class="chart-card">
+      <div class="chart-header">
+        <i class="fas fa-chart-pie"></i>
+        <h5>Répartition des équipements par état</h5>
+      </div>
+      <canvas id="statusPieChart" height="250"></canvas>
+    </div>
+
+    <!-- Top équipements défaillants -->
+    <div class="chart-card">
+      <div class="chart-header">
+        <i class="fas fa-tools"></i>
+        <h5>Top équipements défaillants</h5>
+      </div>
+      <canvas id="topEquipmentsChart" height="250"></canvas>
+    </div>
+
+    <!-- Pannes et maintenances par mois -->
+    <div class="chart-card wide">
+      <div class="chart-header">
+        <i class="fas fa-calendar-alt"></i>
+        <h5>Pannes et maintenances par mois</h5>
+      </div>
+      <canvas id="monthlyChart" height="250"></canvas>
+    </div>
+  </div>
+
+  <!-- Équipements les plus défaillants -->
+  <div class="section-card">
+    <div class="section-header">
+      <i class="fas fa-exclamation-triangle"></i>
+      <h5>Équipements les plus défaillants</h5>
+    </div>
+    <ul id="most-faulty-equipements" class="styled-list"></ul>
+  </div>
+
+  <!-- Chronologie -->
+  <div class="section-card">
+    <div class="section-header">
+      <i class="fas fa-history"></i>
+      <h5>Chronologie</h5>
+    </div>
+    <ul id="timeline" class="styled-list"></ul>
+    <div class="table-wrapper">
+      <table class="styled-table">
+        <thead>
+          <tr>
+            <th>Équipement</th>
+            <th>Date de panne</th>
+            <th>Date de maintenance</th>
+            <th>Durée d'arrêt</th>
+            <th>Recommandation</th>
+          </tr>
+        </thead>
+        <tbody id="timeline-table"></tbody>
+      </table>
+    </div>
+  </div>
+  <!-- Équipements nécessitant une maintenance -->
+  <div class="section-card">
+    <div class="section-header">
+      <i class="fas fa-tools"></i>
+      <h5>Équipements nécessitant une maintenance</h5>
+    </div>
+    <ul id="maintenance_list" class="styled-list"></ul>
+  </div>
+  <!-- ✅ équipements en maintenance prolongée -->
+  <div class="section-card">
+    <div class="section-header">
+      <i class="fas fa-hourglass-half"></i>
+      <h5>Équipements en maintenance prolongée (> 7 jours)</h5>
+    </div>
+    <ul id="long_maintenance_list" class="styled-list"></ul>
+  </div>
+
+  <!-- ✅ équipements sans maintenance récente -->
+  <div class="section-card">
+    <div class="section-header">
+      <i class="fas fa-calendar-times"></i>
+      <h5>Équipements sans maintenance depuis > 7 jours</h5>
+    </div>
+    <ul id="no_recent_maintenance_list" class="styled-list"></ul>
+  </div>
+
+  <!-- Recommandations -->
+  <div class="section-card">
+    <div class="section-header">
+      <i class="fas fa-lightbulb"></i>
+      <h5>Recommandations</h5>
+    </div>
+    <ul id="recommandations" class="styled-list"></ul>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!--<script>
+    async function fetchDashboardData() {
+      try {
+        const startDate = document.getElementById("startDate").value;
+        const endDate = document.getElementById("endDate").value;
+
+        let url = '/api/dashboard-data/';
+        const params = new URLSearchParams();
+        if (startDate) params.append('start_date', startDate);
+        if (endDate) params.append('end_date', endDate);
+        if ([...params].length > 0) {
+          url += '?' + params.toString();
+        }
+
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`Erreur HTTP : ${response.status}`);
+        const data = await response.json();
+
+        updateDashboardUI(data);
+      } catch (error) {
+        console.error("Erreur lors du filtrage des données :", error);
+        alert("Impossible de charger les données filtrées.");
+      }
+    }
+
+    function updateDashboardUI(data) {
+      try {
+        // Statistiques
+        document.getElementById("total_equipements").innerText = data.total_equipments || 0;
+        document.getElementById("broken_equipements").innerText = data.broken_equipments || 0;
+        document.getElementById("last_maintenance_count").innerText = data.last_maintenance_count || 0;
+        document.getElementById("mtbf_days").innerText = (data.mtbf_days || 0).toFixed(2);
+        document.getElementById("avg_maintenance_hours").innerText = (data.avg_maintenance_hours || 0).toFixed(2);
+
+        // Recommandations
+        const recommandationsList = document.getElementById("recommandations");
+        recommandationsList.innerHTML = '';
+        if (data.recommandations?.length > 0) {
+          data.recommandations.forEach(rec => {
+            const li = document.createElement("li");
+            li.textContent = rec;
+            li.classList.add("list-group-item", "recommendation");
+            recommandationsList.appendChild(li);
+          });
+        } else {
+          recommandationsList.innerHTML = "<li class='list-group-item'>Aucune recommandation pour le moment.</li>";
+        }
+
+        // Pie chart - status
+        if (window.statusPieChartInstance) window.statusPieChartInstance.destroy();
+        if (data.status_distribution) {
+          const ctxStatus = document.getElementById('statusPieChart').getContext('2d');
+          window.statusPieChartInstance = new Chart(ctxStatus, {
+            type: 'pie',
+            data: {
+              labels: Object.keys(data.status_distribution),
+              datasets: [{
+                data: Object.values(data.status_distribution),
+                backgroundColor: ['#007bff', '#28a745', '#dc3545'],
+              }]
+            },
+            options: {
+              responsive: true,
+              plugins: { legend: { position: 'bottom' } }
+            }
+          });
+        }
+
+        // Bar chart - top équipements défaillants
+        if (data.top_pannes) {
+          const ctxTop = document.getElementById('topEquipmentsChart').getContext('2d');
+          new Chart(ctxTop, {
+            type: 'bar',
+            data: {
+              labels: data.top_pannes.labels,
+              datasets: [{
+                label: 'Nombre de pannes',
+                data: data.top_pannes.data,
+                backgroundColor: 'rgba(255, 99, 132, 0.7)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1
+              }]
+            },
+            options: {
+              indexAxis: 'y',
+              responsive: true,
+              scales: {
+                x: { beginAtZero: true, ticks: { precision: 0 } }
+              }
+            }
+          });
+        }
+
+        // Line chart - pannes et maintenances mensuelles
+        if (data.monthly_data) {
+          const ctxMonthly = document.getElementById('monthlyChart').getContext('2d');
+          const labels = Array.from(new Set([
+            ...data.monthly_data.pannes.map(x => x.month),
+            ...data.monthly_data.maintenances.map(x => x.month)
+          ])).sort();
+
+          const getCount = (arr, month) => {
+            const found = arr.find(x => x.month === month);
+            return found ? found.count : 0;
+          };
+
+          new Chart(ctxMonthly, {
+            type: 'line',
+            data: {
+              labels,
+              datasets: [
+                {
+                  label: 'Pannes',
+                  data: labels.map(m => getCount(data.monthly_data.pannes, m)),
+                  borderColor: 'rgba(255, 99, 132, 1)',
+                  backgroundColor: 'rgba(255, 99, 132, 0.3)',
+                  fill: false,
+                  tension: 0.3,
+                },
+                {
+                  label: 'Maintenances',
+                  data: labels.map(m => getCount(data.monthly_data.maintenances, m)),
+                  borderColor: 'rgba(54, 162, 235, 1)',
+                  backgroundColor: 'rgba(54, 162, 235, 0.3)',
+                  fill: false,
+                  tension: 0.3,
+                }
+              ]
+            },
+            options: {
+              responsive: true,
+              scales: {
+                x: {
+                  title: { display: true, text: 'Mois' },
+                  ticks: {
+                    callback: function (value) {
+                      return this.getLabelForValue(value).slice(0, 7);
+                    }
+                  }
+                },
+                y: { beginAtZero: true, ticks: { precision: 0 } }
+              }
+            }
+          });
+        }
+
+        // Graphique des pannes par mois (bar chart)
+        if (data.pannes_by_month) {
+          const ctx = document.getElementById("pannesChart").getContext("2d");
+          if (window.pannesChartInstance) window.pannesChartInstance.destroy();
+
+          window.pannesChartInstance = new Chart(ctx, {
+            type: "bar",
+            data: {
+              labels: data.pannes_by_month.map(item => item.month),
+              datasets: [{
+                label: "Nombre de pannes",
+                data: data.pannes_by_month.map(item => item.count),
+                backgroundColor: "rgba(255, 99, 132, 0.6)",
+                borderColor: "rgba(255, 99, 132, 1)",
+                borderWidth: 1,
+              }],
+            },
+            options: {
+              responsive: true,
+              plugins: {
+                legend: { display: false },
+                tooltip: { mode: "index", intersect: false }
+              },
+              scales: {
+                y: {
+                  beginAtZero: true,
+                  ticks: { stepSize: 1 }
+                }
+              }
+            }
+          });
+        }
+
+        // Liste équipements needing maintenance
+        const maintenanceList = document.getElementById("maintenance_list");
+        maintenanceList.innerHTML = "";
+        if (data.equipements_needing_maintenance?.length > 0) {
+          data.equipements_needing_maintenance.forEach(eq => {
+            const li = document.createElement("li");
+            li.className = "list-group-item d-flex justify-content-between align-items-center";
+            li.innerHTML = `${eq.name} <span class="badge bg-danger">${eq.days_since_last_maintenance} jours</span>`;
+            maintenanceList.appendChild(li);
+          });
+        } else {
+          maintenanceList.innerHTML = "<li class='list-group-item'>Aucun équipement en attente.</li>";
+        }
+
+        // Timeline
+        const timelineTable = document.getElementById("timeline-table");
+        timelineTable.innerHTML = '';
+        if (data.timeline && data.timeline.length > 0) {
+          data.timeline.forEach(item => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+            <td>${item.equipment}</td>
+            <td>${item.date_panne}</td>
+            <td>${item.date_maintenance}</td>
+            <td>${item.duree_arret}</td>
+            <td>${item.recommandation || ''}</td>
+        `;
+            timelineTable.appendChild(tr);
+          });
+        } else {
+          timelineTable.innerHTML = `<tr><td colspan="5" class="text-center">Aucune donnée de chronologie disponible</td></tr>`;
+        }
+
+
+        // Liste des équipements défaillants
+        const faultyList = document.getElementById("most-faulty-equipements");
+        faultyList.innerHTML = '';
+        if (data.top_pannes?.labels?.length > 0) {
+          data.top_pannes.labels.forEach((label, idx) => {
+            const li = document.createElement("li");
+            li.textContent = `${label} : ${data.top_pannes.data[idx]} pannes`;
+            li.classList.add("list-group-item");
+            faultyList.appendChild(li);
+          });
+        } else {
+          faultyList.innerHTML = "<li class='list-group-item'>Aucun équipement défaillant à afficher.</li>";
+        }
+
+      } catch (error) {
+        console.error("Erreur lors de la mise à jour de l'UI:", error);
+      }
+    }// ✅ Liste des équipements nécessitant une maintenance
+const maintenanceList = document.getElementById("maintenance_list");
+maintenanceList.innerHTML = "";
+if (data.equipements_needing_maintenance?.length > 0) {
+  data.equipements_needing_maintenance.forEach(eq => {
+    const li = document.createElement("li");
+    li.className = "list-group-item d-flex justify-content-between align-items-center";
+    li.innerHTML = `${eq.name} <span class="badge bg-warning text-dark">${eq.days_since_last_maintenance} jours</span>`;
+    maintenanceList.appendChild(li);
+  });
+} else {
+  maintenanceList.innerHTML = "<li class='list-group-item'>Aucun équipement en attente.</li>";
+}
+
+// ✅ Liste des équipements en maintenance prolongée
+const longMaintenanceList = document.getElementById("long_maintenance_list");
+longMaintenanceList.innerHTML = "";
+if (data.equipements_in_long_maintenance?.length > 0) {
+  data.equipements_in_long_maintenance.forEach(eq => {
+    const li = document.createElement("li");
+    li.className = "list-group-item d-flex justify-content-between align-items-center";
+    li.innerHTML = `${eq.name} <span class="badge bg-danger">${eq.days_in_maintenance} jours</span>`;
+    longMaintenanceList.appendChild(li);
+  });
+} else {
+  longMaintenanceList.innerHTML = "<li class='list-group-item'>Aucune maintenance prolongée détectée.</li>";
+}
+
+// ✅ Liste des équipements sans maintenance récente
+const noRecentList = document.getElementById("no_recent_maintenance_list");
+noRecentList.innerHTML = "";
+if (data.equipements_over_one_week_no_maintenance?.length > 0) {
+  data.equipements_over_one_week_no_maintenance.forEach(eq => {
+    const li = document.createElement("li");
+    li.className = "list-group-item d-flex justify-content-between align-items-center";
+    li.innerHTML = `${eq.name} <span class="badge bg-secondary">${eq.days_since_last_maintenance} jours</span>`;
+    noRecentList.appendChild(li);
+  });
+} else {
+  noRecentList.innerHTML = "<li class='list-group-item'>Tous les équipements ont été entretenus récemment.</li>";
+}
+
+  </script>-->
+<script>
+  async function fetchDashboardData() {
+    try {
+      const startDate = document.getElementById("startDate").value;
+      const endDate = document.getElementById("endDate").value;
+
+      let url = '/api/dashboard-data/';
+      const params = new URLSearchParams();
+      if (startDate) params.append('start_date', startDate);
+      if (endDate) params.append('end_date', endDate);
+      if ([...params].length > 0) {
+        url += '?' + params.toString();
+      }
+
+      const response = await fetch(url);
+      if (!response.ok) throw new Error(`Erreur HTTP : ${response.status}`);
+      const data = await response.json();
+
+      updateDashboardUI(data);
+    } catch (error) {
+      console.error("Erreur lors du filtrage des données :", error);
+      alert("Impossible de charger les données filtrées.");
+    }
+  }
+
+  function updateDashboardUI(data) {
+    try {
+      // Statistiques
+      document.getElementById("total_equipements").innerText = data.total_equipments || 0;
+      document.getElementById("broken_equipements").innerText = data.broken_equipments || 0;
+      document.getElementById("last_maintenance_count").innerText = data.last_maintenance_count || 0;
+      document.getElementById("mtbf_days").innerText = (data.mtbf_days || 0).toFixed(2);
+      document.getElementById("avg_maintenance_hours").innerText = (data.avg_maintenance_hours || 0).toFixed(2);
+
+        // Pie chart - status
+        if (window.statusPieChartInstance) window.statusPieChartInstance.destroy();
+        if (data.status_distribution) {
+          const ctxStatus = document.getElementById('statusPieChart').getContext('2d');
+          window.statusPieChartInstance = new Chart(ctxStatus, {
+            type: 'pie',
+            data: {
+              labels: Object.keys(data.status_distribution),
+              datasets: [{
+                data: Object.values(data.status_distribution),
+                backgroundColor: ['#007bff', '#28a745', '#dc3545'],
+              }]
+            },
+            options: {
+              responsive: true,
+              plugins: { legend: { position: 'bottom' } }
+            }
+          });
+        }
+
+        // Bar chart - top équipements défaillants
+        if (data.top_pannes) {
+          const ctxTop = document.getElementById('topEquipmentsChart').getContext('2d');
+          new Chart(ctxTop, {
+            type: 'bar',
+            data: {
+              labels: data.top_pannes.labels,
+              datasets: [{
+                label: 'Nombre de pannes',
+                data: data.top_pannes.data,
+                backgroundColor: 'rgba(255, 99, 132, 0.7)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1
+              }]
+            },
+            options: {
+              indexAxis: 'y',
+              responsive: true,
+              scales: {
+                x: { beginAtZero: true, ticks: { precision: 0 } }
+              }
+            }
+          });
+        }
+
+        // Line chart - pannes et maintenances mensuelles
+        if (data.monthly_data) {
+          const ctxMonthly = document.getElementById('monthlyChart').getContext('2d');
+          const labels = Array.from(new Set([
+            ...data.monthly_data.pannes.map(x => x.month),
+            ...data.monthly_data.maintenances.map(x => x.month)
+          ])).sort();
+
+          const getCount = (arr, month) => {
+            const found = arr.find(x => x.month === month);
+            return found ? found.count : 0;
+          };
+
+          new Chart(ctxMonthly, {
+            type: 'line',
+            data: {
+              labels,
+              datasets: [
+                {
+                  label: 'Pannes',
+                  data: labels.map(m => getCount(data.monthly_data.pannes, m)),
+                  borderColor: 'rgba(255, 99, 132, 1)',
+                  backgroundColor: 'rgba(255, 99, 132, 0.3)',
+                  fill: false,
+                  tension: 0.3,
+                },
+                {
+                  label: 'Maintenances',
+                  data: labels.map(m => getCount(data.monthly_data.maintenances, m)),
+                  borderColor: 'rgba(54, 162, 235, 1)',
+                  backgroundColor: 'rgba(54, 162, 235, 0.3)',
+                  fill: false,
+                  tension: 0.3,
+                }
+              ]
+            },
+            options: {
+              responsive: true,
+              scales: {
+                x: {
+                  title: { display: true, text: 'Mois' },
+                  ticks: {
+                    callback: function (value) {
+                      return this.getLabelForValue(value).slice(0, 7);
+                    }
+                  }
+                },
+                y: { beginAtZero: true, ticks: { precision: 0 } }
+              }
+            }
+          });
+        }
+
+        // Graphique des pannes par mois (bar chart)
+        if (data.pannes_by_month) {
+          const ctx = document.getElementById("pannesChart").getContext("2d");
+          if (window.pannesChartInstance) window.pannesChartInstance.destroy();
+
+          window.pannesChartInstance = new Chart(ctx, {
+            type: "bar",
+            data: {
+              labels: data.pannes_by_month.map(item => item.month),
+              datasets: [{
+                label: "Nombre de pannes",
+                data: data.pannes_by_month.map(item => item.count),
+                backgroundColor: "rgba(255, 99, 132, 0.6)",
+                borderColor: "rgba(255, 99, 132, 1)",
+                borderWidth: 1,
+              }],
+            },
+            options: {
+              responsive: true,
+              plugins: {
+                legend: { display: false },
+                tooltip: { mode: "index", intersect: false }
+              },
+              scales: {
+                y: {
+                  beginAtZero: true,
+                  ticks: { stepSize: 1 }
+                }
+              }
+            }
+          });
+        }
+
+      // Recommandations
+      const recommandationsList = document.getElementById("recommandations");
+      recommandationsList.innerHTML = '';
+      if (data.recommandations?.length > 0) {
+        data.recommandations.forEach(rec => {
+          const li = document.createElement("li");
+          li.textContent = rec;
+          li.classList.add("list-group-item", "recommendation");
+          recommandationsList.appendChild(li);
+        });
+      } else {
+        recommandationsList.innerHTML = "<li class='list-group-item'>Aucune recommandation pour le moment.</li>";
+      }
+
+      // ✅ Liste équipements nécessitant une maintenance
+      const maintenanceList = document.getElementById("maintenance_list");
+      maintenanceList.innerHTML = "";
+      if (data.equipements_needing_maintenance?.length > 0) {
+        data.equipements_needing_maintenance.forEach(eq => {
+          const li = document.createElement("li");
+          li.className = "list-group-item d-flex justify-content-between align-items-center";
+          li.innerHTML = `${eq.name} <span class="badge bg-warning text-dark">${eq.days_since_last_maintenance} jours</span>`;
+          maintenanceList.appendChild(li);
+        });
+      } else {
+        maintenanceList.innerHTML = "<li class='list-group-item'>Aucun équipement en attente.</li>";
+      }
+
+      // ✅ Liste équipements en maintenance prolongée
+      const longMaintenanceList = document.getElementById("long_maintenance_list");
+      longMaintenanceList.innerHTML = "";
+      if (data.equipements_in_long_maintenance?.length > 0) {
+        data.equipements_in_long_maintenance.forEach(eq => {
+          const li = document.createElement("li");
+          li.className = "list-group-item d-flex justify-content-between align-items-center";
+          li.innerHTML = `${eq.name} <span class="badge bg-danger">${eq.days_in_maintenance} jours</span>`;
+          longMaintenanceList.appendChild(li);
+        });
+      } else {
+        longMaintenanceList.innerHTML = "<li class='list-group-item'>Aucune maintenance prolongée détectée.</li>";
+      }
+
+      // ✅ Liste équipements sans maintenance récente
+      const noRecentList = document.getElementById("no_recent_maintenance_list");
+      noRecentList.innerHTML = "";
+      if (data.equipements_over_one_week_no_maintenance?.length > 0) {
+        data.equipements_over_one_week_no_maintenance.forEach(eq => {
+          const li = document.createElement("li");
+          li.className = "list-group-item d-flex justify-content-between align-items-center";
+          li.innerHTML = `${eq.name} <span class="badge bg-secondary">${eq.days_since_last_maintenance} jours</span>`;
+          noRecentList.appendChild(li);
+        });
+      } else {
+        noRecentList.innerHTML = "<li class='list-group-item'>Tous les équipements ont été entretenus récemment.</li>";
+      }
+
+      // Timeline
+      const timelineTable = document.getElementById("timeline-table");
+      timelineTable.innerHTML = '';
+      if (data.timeline && data.timeline.length > 0) {
+        data.timeline.forEach(item => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${item.equipment}</td>
+            <td>${item.date_panne}</td>
+            <td>${item.date_maintenance}</td>
+            <td>${item.duree_arret}</td>
+            <td>${item.recommandation || ''}</td>
+          `;
+          timelineTable.appendChild(tr);
+        });
+      } else {
+        timelineTable.innerHTML = `<tr><td colspan="5" class="text-center">Aucune donnée de chronologie disponible</td></tr>`;
+      }
+
+      // Liste équipements défaillants
+      const faultyList = document.getElementById("most-faulty-equipements");
+      faultyList.innerHTML = '';
+      if (data.top_pannes?.labels?.length > 0) {
+        data.top_pannes.labels.forEach((label, idx) => {
+          const li = document.createElement("li");
+          li.textContent = `${label} : ${data.top_pannes.data[idx]} pannes`;
+          li.classList.add("list-group-item");
+          faultyList.appendChild(li);
+        });
+      } else {
+        faultyList.innerHTML = "<li class='list-group-item'>Aucun équipement défaillant à afficher.</li>";
+      }
+
+      // TODO: Dessiner الرسوم البيانية مثل Pie/Line chart كما فعلت مسبقًا
+
+    } catch (error) {
+      console.error("Erreur lors de la mise à jour de l'UI:", error);
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    fetchDashboardData();
+  });
+</script>
+
+</body>
+
+</html>

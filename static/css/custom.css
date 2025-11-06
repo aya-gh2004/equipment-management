@@ -1,0 +1,100 @@
+
+/* Conteneur */
+.container {
+    max-width: 960px;
+    margin-top: 50px;
+    margin-bottom: 50px;
+    animation: fadeIn 0.8s ease-in;
+}
+
+/* Animation de fade-in */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Carte */
+.card {
+    border-radius: 1.2rem;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    overflow: hidden;
+}
+
+/* En-tête */
+.card-header {
+    font-size: 1.7rem;
+    font-weight: bold;
+    background: linear-gradient(90deg, #ffc107, #ff9800);
+    padding: 1rem 1.5rem;
+}
+
+/* Formulaire */
+form {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.2rem;
+    padding: 1.5rem;
+}
+
+/* Label */
+form label {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+/* Champs */
+form input[type="text"],
+form input[type="number"],
+form input[type="date"],
+form select,
+form textarea {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid #ccc;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    background-color: #fdfdfd;
+    transition: 0.3s;
+}
+
+form input:focus,
+form select:focus,
+form textarea:focus {
+    border-color: #28a745;
+    box-shadow: 0 0 10px rgba(40, 167, 69, 0.25);
+    background-color: #ffffff;
+    outline: none;
+}
+
+/* Champ complet */
+.mb-3 {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Bouton */
+.btn-success {
+    grid-column: span 2;
+    justify-self: center;
+    padding: 0.6rem 2rem;
+    font-size: 1.2rem;
+    border-radius: 2rem;
+    background-color: #28a745;
+    border: none;
+    transition: 0.3s;
+    box-shadow: 0 4px 15px rgba(40,167,69,0.3);
+}
+
+.btn-success:hover {
+    background-color: #218838;
+    transform: scale(1.05);
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .btn-success {
+        grid-column: span 1;
+    }
+}

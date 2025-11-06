@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Plateforme de gestion des équipements</title>
+
+  {% load static %}
+
+  <!-- CSS principal -->
+  <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+
+  <!-- Manifest PWA -->
+  <link rel="manifest" href="{% static 'manifest.json' %}">
+  <meta name="theme-color" content="#0d6efd">
+  <link rel="icon" href="{% static 'android-chrome-192x192.png' %}">
+
+  <!-- Meta PWA pour mobile -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Équipements">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <style>
+    #install-btn {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: #2a5298;
+      color: white;
+      border: none;
+      padding: 14px 18px;
+      border-radius: 50px;
+      font-size: 16px;
+      font-weight: bold;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      cursor: pointer;
+      z-index: 1000;
+      transition: background 0.3s ease, transform 0.2s ease;
+    }
+
+    #install-btn:hover {
+      background: #1e3c72;
+      transform: scale(1.05);
+    }
+
+    #install-btn:active {
+      transform: scale(0.98);
+    }
+  </style>
+
+</head>
+
+<body>
+  {% if messages %}
+  <ul>
+    {% for message in messages %}
+    <li>{{ message }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+
+  <!-- Contenu dynamique -->
+  {% block content %}{% endblock %}
+
+  <!-- Bouton d'installation PWA -->
+  <!-- Bouton d'installation PWA -->
+  <button id="install-btn" style="display: none;">📲 Installer l'application</button>
+
+
+  <!-- Enregistrement du Service Worker -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register("{% static 'js/service-worker.js' %}")
+        .then(registration => {
+          console.log('✅ Service Worker enregistré avec le scope :', registration.scope);
+        })
+        .catch(error => {
+          console.log('❌ Échec de l’enregistrement du Service Worker :', error);
+        });
+    }
+  </script>
+
+  <!-- Gestion du bouton d'installation -->
+  <script>
+    let deferredPrompt;
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      console.log("✅ Événement beforeinstallprompt déclenché");
+      e.preventDefault();
+      deferredPrompt = e;
+      document.getElementById('install-btn').style.display = 'inline-block';
+    });
+
+    document.getElementById('install-btn').addEventListener('click', async () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+          console.log("✅ L'utilisateur a accepté l'installation");
+        } else {
+          console.log("❌ L'utilisateur a refusé l'installation");
+        }
+        deferredPrompt = null;
+        document.getElementById('install-btn').style.display = 'none';
+      }
+    });
+  </script>
+</body>
+
+</html>

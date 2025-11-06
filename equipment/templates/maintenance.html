@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Gestion des opérations de maintenance</title>
+    <!-- jQuery (إجباري قبل أي شيء يعتمد عليه) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Bootstrap Datepicker CSS -->
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/css/bootstrap-datepicker.min.css">
+
+    <!-- Bootstrap Datepicker JS -->
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/js/bootstrap-datepicker.min.js"></script>
+
+    <!-- لغة فرنسية لـ Datepicker -->
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/locales/bootstrap-datepicker.fr.min.js"></script>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <!-- Bootstrap JS nécessaire pour collapse -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/css/bootstrap-datepicker.min.css">
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/js/bootstrap-datepicker.min.js"></script>
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/locales/bootstrap-datepicker.fr.min.js"></script>
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #d9e5f7;
+            color: #343a40;
+        }
+
+        h3 {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+        }
+
+        .card {
+            border: none;
+            border-radius: 1rem;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .table thead {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .badge {
+            font-size: 0.9rem;
+            padding: 0.5em 0.75em;
+            border-radius: 0.3rem;
+        }
+
+        .btn {
+            transition: all 0.3s ease-in-out;
+        }
+
+        .form-control {
+            border-radius: 0.5rem;
+        }
+
+        .icon-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.5rem;
+            color: #007bff;
+        }
+
+        .table-responsive {
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+
+        .btn-primary {
+            transition: transform 0.2s ease;
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.05);
+        }
+
+        /* Style général des boutons */
+        .action-bar .btn {
+            padding: 10px 18px;
+            border-radius: 10px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+        }
+
+        /* PDF button */
+        .btn-pdf {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+        }
+
+        .btn-pdf:hover {
+            background-color: #c0392b;
+            transform: scale(1.05);
+        }
+
+        /* Excel button */
+        .btn-excel {
+            background-color: #27ae60;
+            color: white;
+            border: none;
+        }
+
+        .btn-excel:hover {
+            background-color: #1e8449;
+            transform: scale(1.05);
+        }
+
+        /* Print button */
+        .btn-print {
+            background-color: #f0f0f0;
+            color: #333;
+            border: 1px solid #ccc;
+        }
+
+        .btn-print:hover {
+            background-color: #e0e0e0;
+            transform: scale(1.05);
+        }
+
+        /* Ajouter button */
+        .btn-add {
+            background: linear-gradient(to right, #00c6ff, #0072ff);
+            color: white;
+            border: none;
+        }
+
+        .btn-add:hover {
+            background: linear-gradient(to right, #0072ff, #0051aa);
+            transform: scale(1.05);
+        }
+
+        /* === Table design modern === */
+        .table {
+            border-collapse: separate;
+            border-spacing: 0;
+            overflow: hidden;
+            border-radius: 12px;
+            background-color: #ffffff;
+            font-size: 0.95rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .table thead {
+            background: linear-gradient(to right, #007bff, #00c6ff);
+            color: white;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }
+
+        .table tbody tr:hover {
+            background-color: #f0f9ff;
+            transition: 0.2s ease-in-out;
+        }
+
+        .table td,
+        .table th {
+            text-align: center;
+            vertical-align: middle;
+            padding: 12px;
+        }
+
+        /* === Badges pour état maintenance === */
+        .badge {
+            padding: 6px 10px;
+            font-size: 0.85rem;
+            border-radius: 10px;
+        }
+
+        .badge.bg-warning {
+            background-color: #f39c12;
+            color: white;
+        }
+
+        .badge.bg-success {
+            background-color: #27ae60;
+        }
+
+        .badge.bg-primary {
+            background-color: #3498db;
+        }
+
+        /* === Boutons d'action === */
+        .btn-sm {
+            font-size: 0.8rem;
+            padding: 5px 10px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-sm:hover {
+            transform: scale(1.05);
+            opacity: 0.9;
+        }
+
+        /* === Modal custom style === */
+        .modal-content {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header-custom {
+            background: linear-gradient(to right, #0072ff, #00c6ff);
+            color: white;
+        }
+
+        .modal-body-custom {
+            background-color: #f8f9fa;
+        }
+
+        .img-large {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            object-fit: cover;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #333;
+            margin-right: 8px;
+        }
+
+        .info-value {
+            color: #555;
+            float: right;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .table {
+                font-size: 0.8rem;
+            }
+        }
+
+        .btn-action {
+            border: none;
+            padding: 8px 12px;
+            margin: 0 4px;
+            border-radius: 8px;
+            color: white;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-action i {
+            font-size: 1rem;
+        }
+
+        /* Voir - Bleu */
+        .btn-action.view {
+            background-color: #3498db;
+        }
+
+        .btn-action.view:hover {
+            background-color: #2980b9;
+        }
+
+        /* Editer - Jaune */
+        .btn-action.edit {
+            background-color: #f1c40f;
+            color: #333;
+        }
+
+        .btn-action.edit:hover {
+            background-color: #d4ac0d;
+        }
+
+        /* Supprimer - Rouge */
+        .btn-action.delete {
+            background-color: #e74c3c;
+        }
+
+        .btn-action.delete:hover {
+            background-color: #c0392b;
+        }
+
+        .icon-title h3 {
+            font-weight: 700;
+            font-size: 1.8rem;
+            background: linear-gradient(90deg, #0d6efd, #6610f2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradient-move 5s ease infinite;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        @keyframes gradient-move {
+            0% {
+                background-position: 0%;
+            }
+
+            100% {
+                background-position: 100%;
+            }
+        }
+
+        .input-group-text i {
+            color: #6c757d;
+        }
+
+        .btn i {
+            margin-right: 6px;
+        }
+
+        .btn-home {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            border-radius: 25px;
+            background: linear-gradient(135deg, #00bcd4, #2196f3);
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(0, 188, 212, 0.25);
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .btn-home i {
+            font-size: 16px;
+        }
+
+        .btn-home:hover {
+            background: linear-gradient(135deg, #0097a7, #1976d2);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(33, 150, 243, 0.3);
+        }
+
+        .collapse:not(.show) {
+            display: block;
+            height: 0;
+            overflow: hidden;
+            transition: height 0.4s ease;
+        }
+    </style>
+</head>
+
+
+<body>
+    <!-- ✅ Ajouter ce bloc dans la modal juste après <div class="modal-body modal-body-custom"> -->
+    <div id="messages" class="mb-3"></div>
+    <div class="container py-5">
+
+        <!-- Titre centré + bouton à droite -->
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+            <a href="{% url 'dashboard' %}" class="btn-home mb-4">
+                <i class="fa-solid fa-house"></i> Accueil
+            </a>
+            <h3 class="mx-auto text-center">
+                <i class="fas fa-exclamation-triangle text-danger me-2"></i>
+                Gestion de maintenance
+            </h3>
+        </div>
+
+        <!-- Filtrage des pannes -->
+        <div class="collapse show" id="filterPannes">
+            <div class="card p-4 shadow-sm border-0 rounded-4 mb-4">
+                <form method="get" class="row g-3 align-items-end">
+
+                    <!-- Équipement -->
+                    <div class="col-md-3">
+                        <label for="filtre-nom" class="form-label">Équipement</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-cogs"></i></span>
+                            <input type="text" id="filtre-nom" name="equipement" class="form-control"
+                                value="{{ request.GET.equipement }}">
+                        </div>
+                    </div>
+
+                    <!-- Date -->
+                    <div class="col-md-3">
+                        <label for="filtre-date" class="form-label">Date</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                            <input type="date" id="filtre-date" name="date" class="form-control"
+                                value="{{ request.GET.date }}">
+                        </div>
+                    </div>
+
+                    <!-- Urgence -->
+                    <div class="col-md-3">
+                        <label for="filtre-urgence" class="form-label">Niveau d'urgence</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-exclamation-circle"></i></span>
+                            <select id="filtre-urgence" name="urgence" class="form-select">
+                                <option value="">Tous</option>
+                                <option value="faible" {% if urgence == "faible" %}selected{% endif %}>Faible</option>
+                                <option value="moyen" {% if urgence == "moyen" %}selected{% endif %}>Moyen</option>
+                                <option value="élevé" {% if urgence == "élevé" %}selected{% endif %}>Élevé</option>
+
+                            </select>
+
+
+                        </div>
+                    </div>
+
+                    <!-- Boutons -->
+                    <div class="col-6 col-md-3">
+                        <button type="submit" class="btn btn-danger w-100">
+                            <i class="fas fa-filter"></i> Filtrer
+                        </button>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <a href="{% url 'pannes' %}" class="btn btn-secondary w-100">
+                            <i class="fas fa-times-circle"></i> Réinitialiser
+                        </a>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+        <!-- Section des actions -->
+        <div class="action-bar d-flex flex-wrap justify-content-end gap-2 mb-4">
+            <a href="{% url 'export_maintenances_pdf' %}" class="btn btn-pdf">
+                <i class="bi bi-file-earmark-pdf me-1"></i> Export PDF
+            </a>
+
+            <a href="{% url 'export_maintenances_excel' %}" class="btn btn-excel">
+                <i class="bi bi-file-earmark-excel me-1"></i> Export Excel
+            </a>
+
+            <button class="btn btn-print" onclick="window.print()">
+                <i class="bi bi-printer me-1"></i> Imprimer
+            </button>
+
+            <button class="btn btn-add" data-bs-toggle="modal" data-bs-target="#addMaintenanceModal">
+                <i class="bi bi-plus-circle me-1"></i> Ajouter Maintenance
+            </button>
+
+        </div>
+        <div id="messages" class="mt-3"></div>
+
+        {% load static %}
+        {% block content %}
+
+        <h2 class="my-1">Historique de maintenance</h2>
+        <table class="table table-hover align-middle table-bordered shadow-sm rounded">
+            <thead class="table-primary text-center">
+                <tr>
+                    <th>ID</th>
+                    <th>Machine</th>
+                    <th>Type</th>
+                    <th>Technicien</th>
+                    <th>État</th>
+                    <th>Coût</th>
+                    <th>Date de début</th>
+                    <th>Date de fin</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody class="table-group-divider">
+                {% for maintenance in maintenances %}
+                <tr>
+                    <td>{{ maintenance.id }}</td>
+                    <td>{{ maintenance.machine.name }}</td>
+                    <td>{{ maintenance.type }}</td>
+                    <td>{{ maintenance.technicien.get_full_name }}</td>
+                    <td>
+                        {% if maintenance.status == 'en_cours' %}
+                        <span class="badge bg-warning">En cours</span>
+                        {% elif maintenance.status == 'terminee' %}
+                        <span class="badge bg-success">Terminée</span>
+                        {% else %}
+                        <span class="badge bg-primary">Planifiée</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ maintenance.cost }} DZD</td>
+                    <td>{{ maintenance.date_debut }}</td>
+                    <td>{{ maintenance.date_fin }}</td>
+                    <td class="text-center">
+                        <button class="btn-action view" data-bs-toggle="modal"
+                            data-bs-target="#detailModal{{ maintenance.id }}" title="Voir les détails">
+                            <i class="bi bi-eye"></i>
+                        </button>
+
+                        <a href="{% url 'edit_maintenance' maintenance.id %}" class="btn-action edit" title="Modifier">
+
+                            <i class="bi bi-pencil-square"></i>
+                        </a>
+
+                        <button class="btn-action delete" onclick="deleteMaintenance({{ maintenance.id }})"
+                            title="Supprimer">
+                            <i class="bi bi-trash3"></i>
+                        </button>
+
+
+                    </td>
+                </tr>
+                {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+                </div>
+                {% endfor %}
+                {% endif %}
+
+
+                <body>
+                    <!-- Modal: Détails Maintenance -->
+                    <div class="modal fade" id="detailModal{{ maintenance.id }}" tabindex="-1"
+                        aria-labelledby="detailModalLabel{{ maintenance.id }}" aria-hidden="true">
+                        <div class="modal-dialog modal-xl modal-dialog-centered">
+                            <div class="modal-content shadow-lg rounded-4 border-0">
+                                <div class="modal-header bg-dark text-white rounded-top-4">
+                                    <h5 class="modal-title" id="detailModalLabel{{ maintenance.id }}">
+                                        <i class="fas fa-tools"></i> Détails de la maintenance
+                                    </h5>
+                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                                        aria-label="Fermer"></button>
+                                </div>
+                                <div class="modal-body px-4 py-4">
+                                    <div class="row g-4">
+                                        <!-- Colonne image -->
+                                        <div class="col-md-6 text-center">
+                                            {% if maintenance.photo_piece %}
+                                            <img src="{{ maintenance.photo_piece.url }}" alt="Photo de la pièce changée"
+                                                class="img-fluid rounded shadow-sm border border-2"
+                                                style="max-height: 400px;">
+                                            {% else %}
+                                            <div class="alert alert-secondary text-center">📷 Aucune photo disponible
+                                            </div>
+                                            {% endif %}
+                                        </div>
+
+                                        <!-- Colonne infos -->
+                                        <div class="col-md-6">
+                                            <ul class="list-group list-group-flush fs-6">
+                                                <li class="list-group-item"><i
+                                                        class="fas fa-hashtag text-primary me-2"></i><strong>ID:</strong>
+                                                    {{ maintenance.id }}</li>
+                                                <li class="list-group-item"><i
+                                                        class="fas fa-cogs text-primary me-2"></i><strong>Machine:</strong>
+                                                    {{ maintenance.machine.name }}</li>
+                                                <li class="list-group-item"><i class="fas fa-user-cog text-primary me-2"></i><strong>Technicien:</strong> 
+                                                    {{ maintenance.technicien.get_full_name }}</li>
+                                                <li class="list-group-item"><i
+                                                        class="fas fa-wrench text-primary me-2"></i><strong>Type:</strong>
+                                                    {{ maintenance.type }}</li>
+                                                <li class="list-group-item"><i
+                                                        class="fas fa-clipboard-check text-primary me-2"></i><strong>État:</strong>
+                                                    {{ maintenance.status }}</li>
+                                                <li class="list-group-item"><i
+                                                        class="fas fa-money-bill-wave text-primary me-2"></i><strong>Coût:</strong>
+                                                    {{ maintenance.cost }} DZD</li>
+                                                <li class="list-group-item"><i
+                                                        class="fas fa-calendar-day text-primary me-2"></i><strong>Début:</strong>
+                                                    {{ maintenance.date_debut }}</li>
+                                                <li class="list-group-item"><i
+                                                        class="fas fa-calendar-check text-primary me-2"></i><strong>Fin:</strong>
+                                                    {{ maintenance.date_fin }}</li>
+                                                <li class="list-group-item"><i
+                                                        class="fas fa-map-marker-alt text-primary me-2"></i><strong>Lieu
+                                                        de correction:</strong> {{ maintenance.lieu_correction }}</li>
+                                                <li class="list-group-item"><i
+                                                        class="fas fa-file-alt text-primary me-2"></i><strong>Rapport:</strong><br><span
+                                                        class="ms-4">{{ maintenance.rapport }}</span></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="modal-footer bg-light rounded-bottom-4">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                        <i class="fas fa-times"></i> Fermer
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% endfor %}
+            </tbody>
+        </table>
+
+        {% endblock %}
+        <!-- Modal: Ajouter Maintenance -->
+        <div class="modal fade" id="addMaintenanceModal" tabindex="-1" aria-labelledby="addMaintenanceModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header modal-header-custom">
+                        <h5 class="modal-title" id="addMaintenanceModalLabel">🛠️ Ajouter une opération de maintenance
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                            aria-label="Fermer"></button>
+                    </div>
+                    <div class="modal-body modal-body-custom">
+
+                        <!-- ✅ Modifier la balise <form> -->
+                        <form method="post" id="maintenanceForm" action="{% url 'add_maintenance' %}"
+                            enctype="multipart/form-data">
+
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="machine" class="form-label"><span
+                                            class="text-danger">*</span>Machine</label>
+                                    <select id="machine" name="machine" class="form-select form-control-custom">
+                                        {% for equipment in equipments %}
+                                        <option value="{{ equipment.id }}">{{ equipment.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                {% if request.user.role != 'technicien' %}
+                                <div class="col-md-6 mb-3">
+                                    <label for="technicien" class="form-label"><span
+                                            class="text-danger">*</span>Technicien</label>
+                                    <select name="technicien" id="technicien" class="form-select form-control-custom">
+                                        {% for tech in techs %}
+                                        <option value="{{ tech.id }}">{{ tech.first_name }} {{ tech.last_name }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="type" class="form-label"><span class="text-danger">*</span>Type de
+                                        Maintenance</label>
+                                    <select id="type" name="type" class="form-select form-control-custom">
+                                        <option value="Préventive">Préventive</option>
+                                        <option value="Corrective">Corrective</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="status" class="form-label"><span
+                                            class="text-danger">*</span>Statut</label>
+                                    <select id="status" name="status" class="form-select form-control-custom">
+                                        <option value="planifiee">Planifiée</option>
+                                        <option value="en_cours">En cours</option>
+                                        <option value="terminee">Terminée</option>
+
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="cost" class="form-label">Coût<span class="text-danger">*</span></label>
+                                    <input type="number" class="form-control form-control-custom" id="cost" name="cost"
+                                        step="0.01">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="date_debut" class="form-label"><span class="text-danger">*</span>Date de
+                                        début</label>
+                                    <input type="text" class="form-control form-control-custom" id="date_debut"
+                                        name="date_debut" placeholder="JJ/MM/AAAA">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="date_fin" class="form-label"><span class="text-danger">*</span>Date de
+                                        fin</label>
+                                    <input type="text" class="form-control form-control-custom" id="date_fin"
+                                        name="date_fin" placeholder="JJ/MM/AAAA">
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="photo_piece" class="form-label">Photo de la pièce changée</label>
+                                <input type="file" class="form-control form-control-custom" id="photo_piece"
+                                    name="photo_piece">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="lieu_correction" class="form-label">Lieu de correction<span
+                                        class="text-danger">*</span></label>
+                                <input type="text" class="form-control form-control-custom" id="lieu_correction"
+                                    name="lieu_correction">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="rapport" class="form-label">Rapport de maintenance<span
+                                        class="text-danger">*</span></label>
+                                <textarea class="form-control form-control-custom" id="rapport" name="rapport"
+                                    rows="3"></textarea>
+                            </div>
+
+                            <div class="text-end">
+                                <button id="btnSubmit" class="btn btn-success" type="submit">
+                                    <span class="spinner-border spinner-border-sm d-none" role="status"
+                                        id="spinnerAdd"></span>
+                                    Enregistrer
+                                </button>
+
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Modal: Message de retour -->
+        <div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title" id="messageModalLabel">Notification</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                            aria-label="Fermer"></button>
+                    </div>
+                    <div class="modal-body" id="messageModalBody">
+                        <!-- Le message apparaîtra ici -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+function sendRequest(url, method, data) {
+    return fetch(url, {
+        method: method,
+        body: data,
+        headers: {
+            // "Content-Type" يجب ألا يُحدد إذا كنت ترسل FormData
+            "X-Requested-With": "XMLHttpRequest"
+        },
+        credentials: "include"
+    })
+    .then(response => {
+        if (!response.ok) {
+            // محاولة قراءة الخطأ كـ JSON
+            return response.json().then(errorData => {
+                throw errorData;
+            }).catch(() => {
+                // إذا فشل التحويل، معناها الاستجابة ليست JSON بل HTML (مثل صفحة خطأ)
+                throw {
+                    message: `Erreur ${response.status}: ${response.statusText}`,
+                };
+            });
+        }
+        return response.json();
+    });
+}
+
+            // Gestion du formulaire d'ajout de maintenance
+            document.querySelector('#addMaintenanceModal form').addEventListener('submit', function (e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+
+                sendRequest("{% url 'add_maintenance' %}", "POST", formData)
+                    .then(data => {
+                        alert(data.message);
+                        window.location.reload();
+                    })
+                    .catch(error => {
+                        console.error('Erreur lors de l\'ajout :', error);
+
+                        // ✅ إذا كان الخطأ يحتوي على تفاصيل الحقول
+                        if (error.errors) {
+                            let msg = "❌ Erreurs dans le formulaire :\n";
+                            for (let field in error.errors) {
+                                msg += `- ${field}: ${error.errors[field].join(', ')}\n`;
+                            }
+                            alert(msg);
+                        } else {
+                            // رسالة عامة في حال عدم توفر التفاصيل
+                            alert(error.message || "Erreur lors de l'ajout.");
+                        }
+                    });
+
+            });
+            // Gestion du formulaire de modification de maintenance
+            const editForm = document.getElementById('editMaintenanceForm');
+            if (editForm) {
+                editForm.addEventListener('submit', function (e) {
+                    e.preventDefault();
+                    const id = document.getElementById('editMaintenanceId').value;
+                    const formData = new FormData(this);
+
+                    sendRequest(`/maintenance/edit/${id}/`, "POST", formData)
+                        .then(data => {
+                            alert(data.message);
+                            window.location.reload();
+                        })
+                        .catch(error => {
+                            console.error('Erreur lors de la modification :', error);
+                            alert(error.message || "Erreur lors de la modification.");
+                        });
+                });
+            }
+
+            function deleteMaintenance(id) {
+                Swal.fire({
+                    title: 'Êtes-vous sûr ?',
+                    text: "Cette opération est irréversible !",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Oui, supprimer !'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        sendRequest(`/maintenance/delete/${id}/`, "POST")
+                            .then(data => {
+                                Swal.fire('Supprimé !', data.message, 'success').then(() => {
+                                    window.location.reload();
+                                });
+                            })
+                            .catch(error => {
+                                Swal.fire('Erreur', error.message || 'Erreur lors de la suppression.', 'error');
+                            });
+                    }
+                });
+            }
+            $(document).ready(function () {
+                $('#date_debut, #date_fin').datepicker({
+                    format: 'dd/mm/yyyy',
+                    language: 'fr',
+                    autoclose: true,
+                    todayHighlight: true
+                });
+            });
+
+        </script>
+
+</body>
+
+</html>

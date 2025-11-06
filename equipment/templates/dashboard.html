@@ -1,0 +1,517 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard | FERTIAL</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Favicon -->
+<link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon">
+<link rel="apple-touch-icon" sizes="180x180" href="{% static 'apple-touch-icon.png' %}">
+<link rel="icon" type="image/png" sizes="32x32" href="{% static 'favicon-32x32.png' %}">
+<link rel="icon" type="image/png" sizes="16x16" href="{% static 'favicon-16x16.png' %}">
+<link rel="manifest" href="{% static 'site.webmanifest' %}">
+  <style>
+    body {
+      background: #f4f6f9;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .navbar {
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .card {
+      border: none;
+      border-radius: 1rem;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+      transition: transform 0.2s ease;
+    }
+
+    .card:hover {
+      transform: scale(1.02);
+    }
+
+    .card-header {
+      font-weight: bold;
+      background: linear-gradient(to right, #007bff, #00bcd4);
+      color: white;
+      border-top-left-radius: 1rem;
+      border-top-right-radius: 1rem;
+    }
+
+    .btn-outline-primary,
+    .btn-outline-success,
+    .btn-outline-warning,
+    .btn-outline-info {
+      border-radius: 30px;
+      padding: 10px 20px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+
+    .btn:hover {
+      transform: scale(1.05);
+    }
+
+    .quick-actions a {
+      display: inline-block;
+      margin: 0.5rem;
+    }
+
+    .list-group-item:hover {
+      background-color: #f1f1f1;
+      cursor: pointer;
+    }
+
+    .card-body a {
+      position: relative;
+      z-index: 10;
+      /* التأكد من أن الرابط في الطبقة الأمامية */
+    }
+  </style>
+  <style>
+    /* صندوق الرسالة */
+    .message-box {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      min-width: 250px;
+      padding: 15px 20px;
+      border-radius: 5px;
+      color: white;
+      font-weight: bold;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      opacity: 0.95;
+      z-index: 9999;
+      animation: slideIn 0.5s ease forwards;
+    }
+
+    .message-box.error {
+      background-color: #e74c3c;
+    }
+
+    .message-box.success {
+      background-color: #2ecc71;
+    }
+
+    .message-box.info {
+      background-color: #3498db;
+    }
+
+    .message-box.warning {
+      background-color: #f39c12;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateX(0);
+        opacity: 0.95;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<audio id="notifSound" src="{% static 'sounds/notif.mp3' %}" preload="auto"></audio>
+  <!-- Header -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary py-3 px-4 d-flex justify-content-between">
+    <div class="dropdown">
+      <a class="text-white dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+        <i class="fas fa-user-circle me-1"></i>
+        <strong>{{ current_user }}</strong>
+      </a>
+      <ul class="dropdown-menu">
+        <li><a class="dropdown-item" href="#">Profil</a></li>
+        <li>
+          <form method="post" action="{% url 'logout_view' %}">
+            {% csrf_token %}
+            <button type="submit" class="dropdown-item">Déconnexion</button>
+          </form>
+        </li>
+      </ul>
+    </div>
+
+    <div>
+      <span class="badge rounded-pill bg-danger">
+        <i class="fas fa-bell me-1"></i>
+        <span class="badge bg-danger">{{ notif_today }}</span>
+
+
+      </span>
+    </div>
+  </nav>
+
+  <div class="container py-4">
+    <!-- Widgets -->
+    <!-- [ابقى كما هو: الكروت والبيانات كما كتبتها] -->
+    <!-- Widgets -->
+    <div class="row g-4 text-center mb-4">
+      <div class="col-md-2">
+        <div class="card text-white bg-primary">
+          <div class="card-body">
+            <i class="fas fa-users fa-2x mb-2"></i>
+            <h6>Utilisateurs</h6>
+            {% if request.user.is_superuser %}
+            <h4>
+              <a href="{% url 'user_list' %}" id="userLink" style="color: white; text-decoration: none;">
+                {{ total_users }}
+              </a>
+            </h4>
+            {% else %}
+            <h4>
+              <a href="#" id="userLink" style="color: white; text-decoration: none;">
+                {{ total_users }}
+              </a>
+            </h4>
+            <script>
+              document.getElementById("userLink").addEventListener("click", function (event) {
+                event.preventDefault();
+                alert("La liste des utilisateurs sera bientôt disponible.");
+              });
+            </script>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+
+      <div class="col-md-2">
+        <div class="card text-white bg-success">
+          <div class="card-body text-center">
+            <i class="fas fa-cogs fa-2x mb-2"></i>
+            <h6>Équipements</h6>
+            <h4><a href="{% url 'equipment_list' %}" class="text-white">{{ total_equipments }}</a></h4>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-2">
+        <div class="card text-white bg-danger">
+          <div class="card-body text-center">
+            <i class="fas fa-exclamation-triangle fa-2x mb-2"></i>
+            <h6>Pannes</h6>
+            <h4><a class="text-white" href="{% url 'pannes' %}">{{ total_pannes }}</a></h4>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-2">
+        <div class="card text-white bg-warning">
+          <div class="card-body">
+            <i class="fas fa-wrench fa-2x mb-2"></i>
+            <h6>Maintenance</h6>
+            <h4><a href="{% url 'maintenance' %}">{{ in_maintenance }}</a></h4>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-2">
+        <div class="card text-white bg-info">
+          <div class="card-body">
+            <i class="fas fa-bullhorn fa-2x mb-2"></i>
+            <h6>Notifications</h6>
+            <h4><a id="notifUnread"  href="{% url 'notifications' %}">{{notif_today}}</a></h4>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-2">
+        <div class="card text-white bg-secondary" href="{% url 'statistiques_page' %}">
+          <div class="card-body" href="{% url 'statistiques_page' %}">
+            <i class="fas fa-tasks fa-2x mb-2" href="{% url 'statistiques_page' %}"></i>
+            <h6>statistiques</h6>
+            <h4><a href="{% url 'statistiques_page' %}">.</a></h4>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% if messages %}
+    <div id="messages-container">
+      {% for message in messages %}
+      <div class="message-box {{ message.tags }}">
+        {{ message }}
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+    <!-- Graphique -->
+    <div class="card mb-4">
+      <div class="card-header">Évolution des Maintenances</div>
+      <div class="card-body">
+        <canvas id="maintenanceChart" height="100"></canvas>
+      </div>
+    </div>
+    
+<div class="card mb-4">
+  <div class="card-header">Activité récente</div>
+  <ul class="list-group list-group-flush">
+    {% for activity in recent_activity %}
+    <li class="list-group-item">
+      <strong>{{ activity.utilisateur.email }}</strong>: {{ activity.description }}<br>
+      <small class="text-muted">{{ activity.date|date:"d/m/Y H:i" }}</small>
+    </li>
+    {% empty %}
+    <li class="list-group-item">Aucune activité récente</li>
+    {% endfor %}
+  </ul>
+</div>
+
+
+    <!-- Actions rapides -->
+    <div class="card mb-4">
+      <div class="card-header">Actions rapides</div>
+      <div class="card-body text-center quick-actions">
+        <a href="#" class="btn btn-outline-primary"><i class="fas fa-user-plus me-1"></i> Ajouter utilisateur</a>
+        <a href="{% url 'equipment_list' %}" class="btn btn-outline-success"><i class="fas fa-plus-circle me-1"></i>
+          Ajouter équipement</a>
+        <a href="{% url 'notifications' %}" class="btn btn-outline-info"><i class="fas fa-bell me-1"></i> Nouvelle
+          notification</a>
+        <a href="{% url 'maintenance' %}" class="btn btn-outline-warning"><i class="fas fa-tools me-1"></i> Nouvelle
+          maintenance</a>
+      </div>
+    </div>
+
+    <!-- Notifications récentes -->
+    <div class="card mb-4">
+      <div class="card-header">Dernières Notifications</div>
+      <ul class="list-group list-group-flush">
+        {% for notif in recent_notifications %}
+        <li class="list-group-item">{{ notif.message }}</li>
+        {% empty %}
+        <li class="list-group-item">Aucune notification récente</li>
+        {% endfor %}
+      </ul>
+      <div class="card-footer text-end">
+        <a href="{% url 'notifications' %}" class="btn btn-sm btn-outline-secondary">Voir toutes</a>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- الرسوم البيانية والأنشطة وغيرها [ابقى كما هو] -->
+
+  </div>
+<canvas id="maintenanceChart" width="400" height="200"></canvas>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+  let maintenanceChartInstance = null;
+
+  fetch('/api/maintenance-data/?year=2024')
+  .then(response => response.json())
+  .then(data => {
+    // استخدام البيانات في الرسم البياني
+    console.log(data.labels, data.values);
+  });
+
+  async function fetchMaintenanceData() {
+    const response = await fetch("{% url 'maintenance_data_api' %}");
+    if (!response.ok) {
+      console.error('Erreur lors du chargement des données');
+      return null;
+    }
+    return await response.json();
+  }
+async function createMaintenanceChart() {
+  const data = await fetchMaintenanceData();
+  if (!data) return;
+
+  const ctx = document.getElementById('maintenanceChart').getContext('2d');
+
+  // 🧨 تدمير الرسم السابق إذا كان موجود
+  if (maintenanceChartInstance !== null) {
+    maintenanceChartInstance.destroy();
+  }
+
+  // 🆕 إنشاء رسم جديد وتخزينه في المتغير
+  maintenanceChartInstance = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: data.labels,
+      datasets: [{
+        label: 'Nombre de maintenances',
+        data: data.values,
+        borderColor: '#007bff',
+        backgroundColor: 'rgba(0,123,255,0.1)',
+        tension: 0.4,
+        fill: true
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: true }
+      }
+    }
+  });
+}
+
+  document.addEventListener('DOMContentLoaded', createMaintenanceChart);
+</script>
+<!-- ✅ الصوت -->
+<audio id="notifSound" src="{% static 'sounds/notif.mp3' %}" preload="auto"></audio>
+
+<!-- ✅ Toast Bootstrap -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+  <div id="liveToast" class="toast align-items-center text-white bg-primary border-0" role="alert">
+    <div class="d-flex">
+      <div class="toast-body" id="toastMessage">Nouvelle notification !</div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+    </div>
+  </div>
+</div>
+
+<!-- ✅ Chart.js + Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>function markNotificationAsRead(id) {
+    fetch("/notifications/mark-as-read/", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": getCSRFToken(), // تأكد من تضمين التوكين
+        },
+        body: JSON.stringify({ id: id }),
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error("Échec de la requête");
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log("Notification marquée comme lue", data);
+    })
+    .catch(error => {
+        console.error("Erreur:", error);
+    });
+}
+
+  // ✅ تشغيل الصوت فقط بعد أول تفاعل
+  let soundEnabled = false;
+  document.addEventListener("click", () => {
+    const audio = document.getElementById("notifSound");
+    audio.play().then(() => {
+      soundEnabled = true;
+      console.log("🔊 Le son est activé !");
+    }).catch(() => {});
+  }, { once: true });
+
+  let lastNotifId = null;
+
+  async function checkNotifications() {
+    try {
+      const response = await fetch('/api/notifications/');
+      const data = await response.json();
+      const newNotifs = data.results.filter(n => !n.is_read);
+
+      if (newNotifs.length > 0) {
+        const latestNotif = newNotifs[0];
+        if (latestNotif.id !== lastNotifId) {
+          lastNotifId = latestNotif.id;
+
+          if (soundEnabled) {
+            document.getElementById("notifSound").play().catch(e => {
+              console.warn("🔇 Impossible de jouer le son :", e);
+            });
+          }
+
+          const toastMessage = document.getElementById("toastMessage");
+          toastMessage.textContent = latestNotif.message || "Nouvelle notification !";
+          const toast = new bootstrap.Toast(document.getElementById("liveToast"));
+          toast.show();
+
+          // تحديد كمقروء
+          fetch('/notifications/mark-as-read/', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({ id: latestNotif.id })
+          });
+        }
+      }
+    } catch (err) {
+      console.error("Erreur lors de la récupération des notifications:", err);
+    }
+  }
+
+  function updateNotifCount() {
+    fetch("{% url 'notif_unread_count' %}")
+      .then(response => response.json())
+      .then(data => {
+        const countEl = document.getElementById("notifUnread");
+        countEl.textContent = data.count;
+
+        if (data.count > 0) {
+          countEl.classList.add("bg-danger");
+        } else {
+          countEl.classList.remove("bg-danger");
+        }
+      })
+      .catch(error => {
+        console.error("Erreur mise à jour des notifications:", error);
+      });
+  }
+
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+      const cookies = document.cookie.split(';');
+      for (let cookie of cookies) {
+        cookie = cookie.trim();
+        if (cookie.startsWith(name + '=')) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+
+  function autoHideMessages() {
+    setTimeout(() => {
+      const messages = document.querySelectorAll('.message-box');
+      messages.forEach(msg => {
+        msg.style.transition = 'opacity 0.5s ease';
+        msg.style.opacity = '0';
+        setTimeout(() => msg.remove(), 500);
+      });
+    }, 5000);
+  }
+
+  async function fetchMaintenanceData() {
+    const response = await fetch("{% url 'maintenance_data_api' %}");
+    if (!response.ok) {
+      console.error('Erreur lors du chargement des données');
+      return null;
+    }
+    return await response.json();
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    updateNotifCount();
+    checkNotifications();
+    autoHideMessages();
+    createMaintenanceChart();
+    setInterval(updateNotifCount, 1000);
+    setInterval(checkNotifications, 10000);
+  });
+</script>
+
+</body>
+
+</html>

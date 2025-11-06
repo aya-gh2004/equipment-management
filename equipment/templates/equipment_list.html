@@ -1,0 +1,495 @@
+{% load static %}
+{% now "Y-m-d" as today %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestion des Équipements</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/toastr/build/toastr.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+<style>
+#drop-area.dragover {
+  background-color: #e8f0fe;
+  border: 2px dashed #007bff;
+}
+</style>
+
+    <style>
+
+        body {
+            padding: 30px;
+            background-color: #c6e3ff;
+        }
+        .card, .table, .modal-content {
+            border-radius: 10px;
+        }
+        .hidden { display: none; }
+        .btn-float-bottom {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
+        }
+        .btn-lg {
+            padding: 15px 20px;
+            font-size: 24px;
+            border-radius: 50%;
+        }
+        .alert-success {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 999;
+        }
+        #drop-area {
+            border: 2px dashed #ccc;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            background-color: #fafafa;
+            border-radius: 8px;
+        }
+        #drop-area.dragover {
+            background-color: #e0e0e0;
+        }
+        .equipment-image {
+            max-width: 100%;
+            max-height: 300px;
+            object-fit: contain;
+            margin-top: 10px;
+        }
+        @media print {
+            .btn, .btn-float-bottom, .form-select, .hidden, #formCard, #searchInput {
+                display: none !important;
+            }
+            .modal { display: none !important; }
+        }
+        .btn-action {
+  border: none;
+  padding: 8px 12px;
+  margin: 0 4px;
+  border-radius: 8px;
+  color: white;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  text-decoration: none;
+}
+
+.btn-action i {
+  font-size: 1rem;
+}
+
+/* Voir - Bleu */
+.btn-action.view {
+  background-color: #3498db;
+}
+.btn-action.view:hover {
+  background-color: #2980b9;
+}
+
+/* Modifier - Jaune */
+.btn-action.edit {
+  background-color: #f1c40f;
+  color: #333;
+}
+.btn-action.edit:hover {
+  background-color: #d4ac0d;
+}
+
+/* Supprimer - Rouge */
+.btn-action.delete {
+  background-color: #e74c3c;
+}
+.btn-action.delete:hover {
+  background-color: #c0392b;
+}
+input::placeholder {
+  font-style: italic;
+  color: #aaa;
+}
+
+select:focus,
+input:focus {
+  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+.btn-outline-danger:hover,
+.btn-outline-success:hover {
+  transform: scale(1.02);
+}
+
+.alert-danger {
+  border-left: 5px solid #dc3545;
+  padding-left: 1rem;
+}
+
+    </style>
+</head>
+<body>
+     <div class="container py-4">
+
+    <!-- Lien retour Accueil -->
+    <div class="mb-3">
+        <a href="{% url 'dashboard' %}" class="btn btn-outline-primary">
+            <i class="fa-solid fa-house me-1"></i> Accueil
+        </a>
+    </div>
+
+    <!-- Messages Flash -->
+    {% if messages %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {% for message in messages %}
+                <div>{{ message }}</div>
+            {% endfor %}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+        </div>
+    {% endif %}
+
+    <!-- Titre principal -->
+    <div class="text-center mb-5">
+        <h1 class="display-5 fw-bold text-primary">
+            <i class="bi bi-hammer me-2"></i>Gestion des Équipements
+        </h1>
+        <p class="text-muted fst-italic">Suivez, filtrez et gérez vos équipements en toute simplicité.</p>
+    </div>
+
+</div>
+
+
+<!-- Barre supérieure (Recherche / Filtres / Actions) -->
+<div class="row g-3 align-items-center mb-4">
+    <div class="col-md-4">
+        <div class="input-group shadow-sm">
+            <span class="input-group-text bg-light"><i class="bi bi-search"></i></span>
+            <input type="text" id="searchInput" class="form-control" placeholder="Rechercher un équipement...">
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <select class="form-select shadow-sm" id="filterByState">
+            <option value="">Filtrer par État</option>
+            <option value="En fonctionnement">🟢 En fonctionnement</option>
+            <option value="En Panne">🔴 En Panne</option>
+            <option value="En Maintenance">🟡 En Maintenance</option>
+        </select>
+    </div>
+
+    <div class="col-md-4 d-flex gap-2">
+        <a href="{% url 'export_pdf' %}" class="btn btn-outline-danger w-50 shadow-sm">
+            <i class="bi bi-file-earmark-pdf"></i> PDF
+        </a>
+        <a href="{% url 'export_excel' %}" class="btn btn-outline-success w-50 shadow-sm">
+            <i class="bi bi-file-earmark-excel"></i> Excel
+        </a>
+    </div>
+
+    <div class="col-12 d-flex justify-content-end">
+        <button onclick="window.print()" class="btn btn-primary shadow-sm">
+            <i class="bi bi-printer-fill"></i> Imprimer la Liste
+        </button>
+    </div>
+</div>
+
+<!-- Formulaire d'ajout caché - Messages d'erreur -->
+{% if form.errors %}
+<div class="alert alert-danger shadow-sm rounded-3">
+    <h5 class="mb-2"><i class="bi bi-exclamation-triangle-fill"></i> Erreurs dans le formulaire :</h5>
+    <ul class="mb-0">
+        {% for field in form %}
+            {% for error in field.errors %}
+                <li>{{ error }}</li>
+            {% endfor %}
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+{% if is_admin %}
+<!-- Bouton flottant pour ajouter un équipement -->
+<button id="addEquipmentButton" class="btn btn-success btn-lg btn-float-bottom" title="Ajouter un équipement">➕</button>
+
+{% endif %}
+<div class="card shadow-sm hidden" id="formCard">
+    <div class="card-header bg-primary text-white">Ajouter un Équipement</div>
+    <div class="card-body">
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label for="name">Nom de l'Équipement<span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="name" name="name" required>
+                </div>
+                <div class="col-md-4">
+                    <label for="type">Type d'Équipement<span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="type" name="type" required>
+                </div>
+                <div class="col-md-4">
+                    <label for="serial_number">Numéro Série<span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="serial_number" name="serial_number" required>
+                </div>
+
+                <div class="col-md-4">
+                    <label for="purchase_date">Date d'Achat<span class="text-danger">*</span></label>
+                    <input type="date" class="form-control" id="purchase_date" name="purchase_date" required>
+                </div>
+                <div class="col-md-4">
+                    <label for="purchase_cost">Coût d'achat (DZD)<span class="text-danger">*</span></label>
+                    <input type="number" class="form-control" id="purchase_cost" name="purchase_cost" required>
+                </div>
+                <div class="col-md-4">
+                    <label for="lifetime_years">Durée de Vie (ans)<span class="text-danger">*</span></label>
+                    <input type="number" class="form-control" id="lifetime_years" name="lifetime_years" required>
+                </div>
+
+                <div class="col-md-4">
+                    <label for="usage_hours">Heures d'Utilisation<span class="text-danger">*</span></label>
+                    <input type="number" class="form-control" id="usage_hours" name="usage_hours" required>
+                </div>
+             
+                <div class="col-md-4">
+                    <label for="state">État<span class="text-danger">*</span></label>
+                    <select class="form-select" id="state" name="state" required>
+                        <option value="En fonctionnement" {% if equipment.state == 'En fonctionnement' %}selected{% endif %}>En fonctionnement</option>
+                        <option value="En Panne" {% if equipment.state == 'En Panne' %}selected{% endif %}>En Panne</option>
+                        <option value="En Maintenance" {% if equipment.state == 'En Maintenance' %}selected{% endif %}>En Maintenance</option>
+                    </select>
+                </div>
+                
+                <div class="col-md-4">
+                    <label for="location">Emplacement<span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="location" name="location" required>
+                </div>
+
+                <div class="col-md-4">
+                    <label for="equipment_code">Code de l'Équipement<span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="equipment_code" name="equipment_code" required>
+                </div>
+                <div class="col-md-4">
+                    <label for="installation_date">Date d'Installation<span class="text-danger">*</span></label>
+                    <input type="date" class="form-control" id="installation_date" name="installation_date" value="{{ today }}" required>
+                </div>
+                <div class="col-md-4">
+                    <label for="last_maintenance_date">Dernière Maintenance<span class="text-danger">*</span></label>
+                    <input type="date" class="form-control" id="last_maintenance_date" name="last_maintenance_date" value="{{ today }}" required>
+                </div>
+<div class="col-12">
+  <label for="file-input">Photo de l'Équipement</label>
+  <div id="drop-area" class="border rounded p-3 text-center" style="cursor: pointer;">
+    <p>📂 Glissez-déposez ou cliquez pour choisir une image</p>
+    <input type="file" accept=".jpg,.jpeg,.png" class="form-control d-none" id="file-input">
+    <input type="file" name="photo" id="photo" class="d-none">
+  </div>
+</div>
+
+            </div>
+
+            <button type="submit" class="btn btn-success mt-4 w-100">✅ Ajouter</button>
+        </form>
+    </div>
+</div>
+
+<!-- Liste des équipements -->
+<div class="table-responsive mt-4">
+<table class="table table-hover shadow-sm">
+    <thead class="table-primary">
+        <tr class="text-center">
+            <th>Nom</th>
+            <th>Type</th>
+            <th>Numéro Série</th>
+            <th>Date d'Achat</th>
+            <th>Coût (DZD)</th>
+            <th>Durée (ans)</th>
+            <th>Utilisation (h)</th>
+            <th>État</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for equipment in equipments %}
+        <tr class="text-center align-middle">
+            <td>{{ equipment.name }}</td>
+            <td>{{ equipment.type }}</td>
+            <td>{{ equipment.serial_number }}</td>
+            <td>{{ equipment.purchase_date|date:"d/m/Y" }}</td>
+            <td>{{ equipment.purchase_cost }}</td>
+            <td>{{ equipment.lifetime_years }}</td>
+            <td>{{ equipment.usage_hours }}</td>
+            <td>
+                {% if equipment.state == "En fonctionnement" %}
+                <span class="badge bg-success">{{ equipment.state }}</span>
+            {% elif equipment.state == "En Panne" %}
+                <span class="badge bg-danger">{{ equipment.state }}</span>
+            {% else %}
+                <span class="badge bg-warning text-dark">{{ equipment.state }}</span>
+            {% endif %}
+            
+            </td>
+            <td class="text-center">
+  <!-- Voir Détails -->
+  <button class="btn-action view" data-bs-toggle="modal" data-bs-target="#equipmentModal{{ equipment.id }}" title="Détails">
+    <i class="bi bi-eye"></i>
+  </button>
+
+  <!-- Modifier -->
+  <a href="{% url 'edit_equipment' equipment.id %}" class="btn-action edit" title="Modifier">
+    <i class="bi bi-pencil-square"></i>
+  </a>
+  <!-- Supprimer -->
+  <a href="{% url 'equipment_delete' equipment.id %}" class="btn-action delete" onclick="return confirm('Confirmer la suppression ?')" title="Supprimer">
+    <i class="bi bi-trash3"></i>
+  </a>
+  
+</td>
+
+        </tr>
+
+        <!-- Modal Détails -->
+        <div class="modal fade" id="equipmentModal{{ equipment.id }}" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title">Détails de {{ equipment.name }}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p><strong>Type:</strong> {{ equipment.type }}</p>
+                        <p><strong>Numéro Série:</strong> {{ equipment.serial_number }}</p>
+                        <p><strong>Date d'Achat:</strong> {{ equipment.purchase_date|date:"d/m/Y" }}</p>
+                        <p><strong>Coût:</strong> {{ equipment.purchase_cost }} DZD</p>
+                        <p><strong>Durée de Vie:</strong> {{ equipment.lifetime_years }} ans</p>
+                        <p><strong>Utilisation:</strong> {{ equipment.usage_hours }} heures</p>
+                        <p><strong>État:</strong> {{ equipment.state }}</p>
+                        <p><strong>Emplacement:</strong> {{ equipment.location }}</p>
+                        <p><strong>Code:</strong> {{ equipment.equipment_code }}</p>
+                        <p><strong>Installation:</strong> {{ equipment.installation_date|date:"d/m/Y" }}</p>
+                        <p><strong>Dernière Maintenance:</strong> {{ equipment.last_maintenance_date|date:"d/m/Y" }}</p>
+                        {% if equipment.photo %}
+                        <img src="{{ equipment.photo.url }}" class="equipment-image">
+                        {% else %}
+                        <p>Aucune photo disponible.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel">Modifier l'Équipement</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="editForm" method="POST">
+                    {% csrf_token %}
+                    <!-- Form fields for editing -->
+                    <div class="mb-3">
+                        <label for="edit_name" class="form-label">Nom</label>
+                        <input type="text" class="form-control" id="edit_name" name="name">
+                    </div>
+                    <!-- Additional form fields will go here -->
+                    <button type="submit" class="btn btn-primary">Sauvegarder</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Ajout du script JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/toastr/build/toastr.min.js"></script>
+<script>
+    $(document).ready(function() {
+    // Affichage du formulaire d'ajout
+    $("#addEquipmentButton").click(function() {
+        $("#formCard").toggleClass("hidden");
+    });
+
+    // Filtrer la table par état d'équipement
+    $('#filterByState').change(function() {
+        var state = $(this).val().toLowerCase();
+        $("tbody tr").each(function() {
+            var rowState = $(this).find('td:eq(7)').text().toLowerCase().trim();
+            if (state === "" || rowState === state) {
+                $(this).show();
+            } else {
+                $(this).hide();
+            }
+        });
+    });
+
+    // Recherche dans la table
+    $('#searchInput').on('keyup', function() {
+        var value = $(this).val().toLowerCase();
+        $("tbody tr").filter(function() {
+            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+        });
+    });
+
+const dropArea = document.getElementById("drop-area");
+const fileInput = document.getElementById("file-input");
+const photoInput = document.getElementById("photo");
+
+if (dropArea && fileInput && photoInput) {
+  dropArea.addEventListener("click", () => fileInput.click());
+
+  dropArea.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    dropArea.classList.add("dragover");
+  });
+
+  dropArea.addEventListener("dragleave", () => {
+    dropArea.classList.remove("dragover");
+  });
+
+  dropArea.addEventListener("drop", (e) => {
+    e.preventDefault();
+    dropArea.classList.remove("dragover");
+    const files = e.dataTransfer.files;
+    fileInput.files = files;
+    photoInput.files = files;
+  });
+
+  fileInput.addEventListener("change", () => {
+    photoInput.files = fileInput.files;
+  });
+}
+
+});
+
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const addBtn = document.getElementById("addEquipmentButton");
+    if (addBtn) {
+        addBtn.addEventListener("click", function() {
+            // فتح النافذة فقط إذا كانت موجودة
+            const modal = document.getElementById("addModal");
+            if (modal) {
+                var modalInstance = new bootstrap.Modal(modal);
+                modalInstance.show();
+            }
+        });
+    }
+});
+</script>
+
+</body>
+</html>

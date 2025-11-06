@@ -1,0 +1,198 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+{% load static %}
+
+{% block content %}
+<style>
+    body {
+        background: linear-gradient( #afc6f7, #ecedf0);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        padding: 20px;
+        animation: fadeIn 0.7s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(15px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card {
+        max-width: 850px;
+        margin: auto;
+        background: #ffffff;
+        border-radius: 20px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        overflow: hidden;
+        animation: fadeIn 1s ease-in-out;
+    }
+
+    .card-header {
+        background-color: #2a5298;
+        color: white;
+        padding: 20px;
+        font-size: 1.4rem;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+    }
+
+    .card-header i {
+        margin-right: 10px;
+    }
+
+    .card-body {
+        padding: 30px;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    label {
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .form-select, .form-control {
+        padding: 10px 14px;
+        border-radius: 10px;
+        border: 1px solid #ccc;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-select:focus, .form-control:focus {
+        border-color: #2a5298;
+        box-shadow: 0 0 5px rgba(42, 82, 152, 0.4);
+        outline: none;
+    }
+
+    .photo-preview {
+        grid-column: span 2;
+        text-align: center;
+    }
+
+    .photo-preview img {
+        max-height: 200px;
+        margin-top: 10px;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
+
+    .btn-submit {
+        grid-column: span 2;
+        padding: 12px 30px;
+        background: #2a5298;
+        color: white;
+        font-size: 1rem;
+        font-weight: bold;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: background 0.3s ease;
+        margin-top: 10px;
+        align-self: center;
+    }
+
+    .btn-submit:hover {
+        background: #1e3c72;
+        transform: scale(1.02);
+    }
+</style>
+<style>
+.btn-retour {
+  transition: all 0.3s ease;
+  border-radius: 50px;
+  padding: 8px 20px;
+  font-weight: 500;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.btn-retour:hover {
+  background-color: #f8f9fa;
+  transform: translateX(-3px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+}
+</style>
+
+<div class="card">
+    <div class="card-header">
+        <i class="fas fa-screwdriver-wrench me-2"></i> Modifier la Maintenance
+    </div>
+    <div class="card-body">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label><i class="fas fa-cogs"></i> Machine</label>
+                {{ form.machine|add_class:"form-select" }}
+            </div>
+
+            <div class="form-group">
+                <label><i class="fas fa-user-cog"></i> Technicien</label>
+                {{ form.technicien|add_class:"form-select" }}
+            </div>
+
+            <div class="form-group">
+                <label><i class="fas fa-wrench"></i> Type</label>
+                {{ form.type|add_class:"form-select" }}
+            </div>
+
+            <div class="form-group">
+                <label><i class="fas fa-spinner"></i> Statut</label>
+                {{ form.status|add_class:"form-select" }}
+            </div>
+
+            <div class="form-group">
+                <label><i class="fas fa-dollar-sign"></i> Coût</label>
+                {{ form.cost|add_class:"form-control" }}
+            </div>
+
+            <div class="form-group">
+                <label><i class="fas fa-map-marker-alt"></i> Lieu de correction</label>
+                {{ form.lieu_correction|add_class:"form-control" }}
+            </div>
+
+            <div class="form-group">
+                <label><i class="fas fa-calendar-day"></i> Date de début</label>
+                {{ form.date_debut|add_class:"form-control" }}
+            </div>
+
+            <div class="form-group">
+                <label><i class="fas fa-calendar-check"></i> Date de fin</label>
+                {{ form.date_fin|add_class:"form-control" }}
+            </div>
+
+            <div class="form-group">
+                <label><i class="fas fa-image"></i> Photo de la pièce</label>
+                {{ form.photo_piece|add_class:"form-control" }}
+            </div>
+
+            {% if form.instance.photo_piece %}
+            <div class="photo-preview">
+                <strong>Aperçu actuel :</strong><br>
+                <img src="{{ form.instance.photo_piece.url }}" alt="Photo actuelle">
+            </div>
+            {% endif %}
+
+            <div class="form-group" style="grid-column: span 2;">
+                <label><i class="fas fa-file-alt"></i> Rapport</label>
+                {{ form.rapport|add_class:"form-control" }}
+            </div>
+            <div>
+<a href="javascript:history.back()" class="btn btn-outline-secondary btn-retour">
+  <i class="fas fa-arrow-left me-2"></i> Retour
+</a>
+
+            <button type="submit" class="btn-submit">
+                <i class="fas fa-save"></i> Enregistrer
+            </button></div>
+        </form>
+    </div>
+</div>
+{% endblock %}

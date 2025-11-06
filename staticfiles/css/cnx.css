@@ -1,0 +1,118 @@
+/* Styles généraux */
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #74b9ff, #00c853);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+/* Conteneur de connexion */
+.login-container {
+    background: rgba(255, 255, 255, 0.15); /* Transparence */
+    padding: 30px;
+    border-radius: 15px;
+    backdrop-filter: blur(10px); /* Effet verre dépoli */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    width: 350px;
+    text-align: center;
+    color: white;
+}
+
+/* Avatar */
+.avatar {
+    width: 80px;
+    height: 80px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    margin: 0 auto 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.messages p.success { color: green; }
+.messages p.error { color: red; }
+.messages p.info { color: blue; }
+
+.error {
+    color: red;
+    text-align: center;
+    font-weight: bold;
+    margin: 10px 0;
+}
+
+
+.avatar img {
+    width: 100px;
+    opacity: 1;
+}
+
+/* Formulaire */
+.form-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+label {
+    font-size: 12px;
+    color: #fff;
+    display: flex;
+    align-items: center;
+}
+
+.icon {
+    width: 20px;
+    margin-right: 10px;
+}
+
+input {
+    width: 89%;
+    padding: 14px;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    outline: none;
+}
+
+input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* Options */
+.options {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    margin-bottom: 15px;
+}
+
+.options a {
+    color: #030ca5;
+    text-decoration: none;
+}
+
+.options a:hover {
+    text-decoration: underline;
+}
+
+/* Bouton */
+.btn {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(90deg, #080f91, #71ffff);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.btn:hover {
+    background: linear-gradient(90deg, #71ffff, #080f91);
+    transform: scale(1.05);
+}
