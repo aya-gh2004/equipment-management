@@ -38,7 +38,7 @@
   }
 
   .login-container label {
-    color: #4129c5cc;
+    color: #ffffffcc;
     font-weight: 600;
     margin-top: 15px;
     display: block;
@@ -53,7 +53,7 @@
     border-radius: 10px;
     font-size: 14px;
     background: #ffffff33;
-    color: #08065f;
+    color: #fff;
     outline: none;
     transition: box-shadow 0.3s ease;
   }
@@ -98,19 +98,16 @@
   {% if form.errors %}
     <p class="error-message">Identifiants invalides. Veuillez réessayer.</p>
   {% endif %}
-<form method="post">
-  {% csrf_token %}
-  <label for="id_username">Adresse e-mail <span style="color:red">*</span> :</label>
-  <input type="email" name="username" id="id_username" required>
-  <label for="id_password">Mot de passe <span style="color:red">*</span> :</label>
-  <input type="password" name="password" id="id_password" required>
-  <button type="submit">Se connecter</button>
-</form>
-  <div style="text-align: center; margin-top: 15px;">
-  <a href="{% url 'password_reset_request' %}" style="color: #100b55cc; text-decoration: underline;">
-    Mot de passe oublié ?
-  </a>
-</div>
+
+  <form method="post">
+    {% csrf_token %}
+    <label for="id_username">Adresse e-mail :</label>
+    <input type="email" name="username" id="id_username" required>
+
+    <label for="id_password">Mot de passe :</label>
+    <input type="password" name="password" id="id_password" required>
+
+    <button type="submit">Se connecter</button>
+  </form>
 </div>
 {% endblock %}
-
