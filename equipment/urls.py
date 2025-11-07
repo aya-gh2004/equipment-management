@@ -13,7 +13,7 @@ from .views import (
     CustomLoginView, ForcePasswordChangeView,
     notif_unread_count , UserDeleteAPIView,
     equipment_list, add_equipment, delete_equipment,DashboardDataAPIView,
-    equipment_detail, edit_equipment, add_maintenance , PanneViewSet,create_panne,
+    equipment_detail, edit_equipment, add_maintenance , PanneViewSet,create_panne, auth_test_demo,
 )
 from django.views.generic import RedirectView
 
@@ -123,6 +123,8 @@ path('notifications/mark-as-read/', mark_as_read, name='mark_as_read'),
     path('api/statistiques/', statistiques_api, name='statistiques_api'),
     path('api/dashboard/statistiques/', statistiques_api, name='api_dashboard_statistiques'),
     path('create-demo/<str:secret>/', create_or_reset_demo_user), 
+    
+    path('auth-test-demo/', views.auth_test_demo),
     # -------- Custom APIs --------
     path('api/equipment/add/', AjouterEquipementAPIView.as_view(), name='api_ajout_equipement'),
 ]

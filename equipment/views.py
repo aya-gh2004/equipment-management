@@ -1875,3 +1875,18 @@ def create_or_reset_demo_user(request, secret):
     except Exception as e:
         return HttpResponse(f"Error creating user: {e}", status=500)
 # --- END DEMO USER ONE-SHOT ---
+# TEMP - auth test (احذفيه بعد الفحص)
+from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth import authenticate
+@csrf_exempt
+def auth_test_demo(request):
+    # اختبار مباشر باسم demo@example.com وكلمة demo1234
+    email = "demo@example.com"
+    password = "demo1234"
+
+    user = authenticate(request, email=email, password=password)
+    if user is not None:
+        return HttpResponse(f"AUTH OK - user id: {user.id}, email: {user.email}")
+    else:
+        return HttpResponse("AUTH FAIL", status=401)
