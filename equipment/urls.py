@@ -43,6 +43,7 @@ urlpatterns = [
     
     path('login/', CustomLoginView.as_view(), name='login'),
     path('create_or_reset_demo_user/<str:secret>/', views.create_or_reset_demo_user, name='create_or_reset_demo_user'),
+    path('auth_test_demo/', auth_test_demo, name='auth_test_demo'),
     path('password-reset/', views.password_reset_request, name='password_reset_request'),
     path('password-reset/verify/', views.verify_code, name='verify_code'),
     path('password-reset/set-new-password/', views.set_new_password, name='set_new_password'),
