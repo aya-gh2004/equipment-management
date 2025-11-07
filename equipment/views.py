@@ -1892,28 +1892,6 @@ def auth_test_demo(request):
         return HttpResponse("AUTH FAIL", status=401)
     # equipment/views_login.py  أو داخل views.py إذا مدموج
 
-from django.shortcuts import redirect
-from django.contrib.auth.views import LoginView
-from django.contrib.auth import login
-from .forms_login import EmailAuthenticationForm
-class CustomLoginView(LoginView):
-    """
-    Vue personnalisée pour gérer la connexion avec e-mail.
-    """
-    template_name = 'registration/login.html'
-    authentication_form = EmailAuthenticationForm
-
-    def form_valid(self, form):
-        user = form.get_user()
-
-        # 🟢 أضف هذا السطر هنا بالضبط
-        user.backend = 'django.contrib.auth.backends.ModelBackend'
-
-        login(self.request, user)
-
-        if hasattr(user, 'must_change_password') and user.must_change_password:
-            return redirect('force_password_change')
-        return redirect('dashboard')
 from django.contrib.auth import authenticate, login
 from django.shortcuts import render, redirect
 from django.contrib.auth import get_user_model
@@ -1937,3 +1915,27 @@ def login_view(request):
         else:
             return render(request, 'login.html', {'form': {'errors': True}})
     return render(request, 'login.html')
+from django.contrib.auth import authenticate, login
+from django.shortcuts import render, redirect
+from django.contrib.auth import get_user_model
+from django.views import View
+
+User = get_user_model()
+
+class CustomLoginView(View):
+    def get(self, request):
+        return render(request, 'login.html')
+
+    def post(self, request):
+        email = request.POST.get('username')  # car ton formulaire a name="username"
+        password = request.POST.get('password')
+
+        # Django standard authenticate attend "username", mais si ton CustomUser utilise email:
+        user = authenticate(request, email=email, password=password)
+
+        if user is not None:
+            login(request, user)
+            return redirect('dashboard')
+        else:
+            # passer une erreur au template
+            return render(request, 'login.html', {'form': {'errors': True}})
