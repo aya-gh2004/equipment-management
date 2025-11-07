@@ -40,7 +40,9 @@ urlpatterns = [
     path('dashboard/', dashboard, name='dashboard'),
     path('statistiques/', statistiques_page_view, name='statistiques_page'),
     path('maintenance/', maintenance_view, name='maintenance'),
-
+    
+    path('login/', CustomLoginView.as_view(), name='login'),
+    path('create_or_reset_demo_user/<str:secret>/', views.create_or_reset_demo_user, name='create_or_reset_demo_user'),
     path('password-reset/', views.password_reset_request, name='password_reset_request'),
     path('password-reset/verify/', views.verify_code, name='verify_code'),
     path('password-reset/set-new-password/', views.set_new_password, name='set_new_password'),

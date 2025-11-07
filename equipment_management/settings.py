@@ -1,22 +1,22 @@
 """
-Django settings for equipment_management project — version for Render.
+Django settings for equipment_management project — version corrigée.
 """
 
 import os
 from pathlib import Path
-import dj_database_url  # لإدارة قاعدة البيانات عبر متغير البيئة DATABASE_URL
+import dj_database_url
 
 # ================================
-# 🔧 Chemins de base
+# 🔧 Base paths
 # ================================
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # ================================
-# 🔐 Clé secrète & débogage
+# 🔐 Secret key & Debug
 # ================================
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "changeme-in-production")
 
-DEBUG = os.environ.get("DEBUG", "False") == "True"
+DEBUG = os.environ.get("DEBUG", "True") == "True"
 
 ALLOWED_HOSTS = [
     os.environ.get("RENDER_EXTERNAL_HOSTNAME", "127.0.0.1"),
@@ -27,9 +27,10 @@ ALLOWED_HOSTS = [
 # 👤 Authentification
 # ================================
 AUTH_USER_MODEL = 'equipment.CustomUser'
+
 AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend',
-    'equipment.backends.EmailBackend',
+    'equipment.backends.EmailBackend',        # ✅ ton backend personnalisé pour login avec email
+    'django.contrib.auth.backends.ModelBackend',  # ✅ fallback classique
 ]
 
 LOGIN_URL = '/login/'
@@ -37,7 +38,7 @@ LOGIN_REDIRECT_URL = '/dashboard/'
 LOGOUT_REDIRECT_URL = '/'
 
 # ================================
-# 📦 Applications installées
+# 📦 Installed apps
 # ================================
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -46,9 +47,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # Applications locales
+    # Local apps
     'equipment',
-    # Extensions externes
+    # External packages
     'widget_tweaks',
     'rest_framework',
     'corsheaders',
@@ -65,7 +66,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
-    "whitenoise.middleware.WhiteNoiseMiddleware",  # ضروري للنشر
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -95,7 +96,7 @@ TEMPLATES = [
 ]
 
 # ================================
-# 🛠 Application principale
+# 🛠 URLs & WSGI
 # ================================
 ROOT_URLCONF = "equipment_management.urls"
 WSGI_APPLICATION = "equipment_management.wsgi.application"
@@ -103,16 +104,28 @@ WSGI_APPLICATION = "equipment_management.wsgi.application"
 # ================================
 # 🗄 Base de données
 # ================================
-# قاعدة بيانات محلية + دعم Render (Postgres)
 DATABASES = {
-    "default": dj_database_url.config(
-        default="postgresql://postgres:aya2004@localhost:5432/equipment_db",
-        conn_max_age=600,
-    )
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'equipment_db',
+        'USER': 'postgres',
+        'PASSWORD': 'aya2004',
+        'HOST': 'localhost',
+        'PORT': '5432',
+    }
 }
 
+# ✅ Automatic config si DATABASE_URL existe (Render)
+DATABASES['default'] = dj_database_url.config(
+    default=os.environ.get(
+        'DATABASE_URL',
+        'postgresql://postgres:aya2004@localhost:5432/equipment_db'
+    ),
+    conn_max_age=600,
+)
+
 # ================================
-# 🔐 Validation des mots de passe
+# 🔐 Password validators
 # ================================
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
@@ -130,7 +143,7 @@ USE_L10N = True
 USE_TZ = True
 
 # ================================
-# 📁 Fichiers statiques & médias
+# 📁 Static & media
 # ================================
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"

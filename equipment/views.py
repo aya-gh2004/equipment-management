@@ -1890,3 +1890,27 @@ def auth_test_demo(request):
         return HttpResponse(f"AUTH OK - user id: {user.id}, email: {user.email}")
     else:
         return HttpResponse("AUTH FAIL", status=401)
+    # equipment/views_login.py  أو داخل views.py إذا مدموج
+
+from django.shortcuts import redirect
+from django.contrib.auth.views import LoginView
+from django.contrib.auth import login
+from .forms_login import EmailAuthenticationForm
+class CustomLoginView(LoginView):
+    """
+    Vue personnalisée pour gérer la connexion avec e-mail.
+    """
+    template_name = 'registration/login.html'
+    authentication_form = EmailAuthenticationForm
+
+    def form_valid(self, form):
+        user = form.get_user()
+
+        # 🟢 أضف هذا السطر هنا بالضبط
+        user.backend = 'django.contrib.auth.backends.ModelBackend'
+
+        login(self.request, user)
+
+        if hasattr(user, 'must_change_password') and user.must_change_password:
+            return redirect('force_password_change')
+        return redirect('dashboard')
