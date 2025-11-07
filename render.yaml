@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: equipment-management
+    env: python
+    plan: free
+    buildCommand: "pip install -r requirements.txt && python manage.py collectstatic --noinput"
+    startCommand: "gunicorn equipment_management.wsgi:application"
+    envVars:
+      - key: DEBUG
+        value: False
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: equipment-db
+          property: connectionString
+
+databases:
+  - name: equipment-db
+    plan: free

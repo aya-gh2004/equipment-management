@@ -1,1 +1,1 @@
-web: gunicorn equipment_management.wsgi
+web: gunicorn equipment_management.wsgi:application

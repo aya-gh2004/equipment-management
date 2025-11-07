@@ -110,12 +110,17 @@ WSGI_APPLICATION = 'equipment_management.wsgi.application'
 # 🗄 Base de données
 # ================================
 import dj_database_url
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 DATABASES = {
     'default': dj_database_url.config(
         default=os.environ.get('DATABASE_URL')
     )
 }
+
 
 
 # ================================
