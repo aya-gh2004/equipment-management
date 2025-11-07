@@ -1917,25 +1917,22 @@ def login_view(request):
     return render(request, 'login.html')
 from django.contrib.auth import authenticate, login
 from django.shortcuts import render, redirect
-from django.contrib.auth import get_user_model
 from django.views import View
-
-User = get_user_model()
 
 class CustomLoginView(View):
     def get(self, request):
         return render(request, 'login.html')
 
     def post(self, request):
-        email = request.POST.get('username')  # car ton formulaire a name="username"
+        email = request.POST.get('username')  # في الفورم لديك name="username" لكنه في الحقيقة بريد إلكتروني
         password = request.POST.get('password')
 
-        # Django standard authenticate attend "username", mais si ton CustomUser utilise email:
+        # ✅ استخدم email لأن USERNAME_FIELD = 'email'
         user = authenticate(request, email=email, password=password)
 
         if user is not None:
             login(request, user)
             return redirect('dashboard')
         else:
-            # passer une erreur au template
+            # afficher message d'erreur dans le template
             return render(request, 'login.html', {'form': {'errors': True}})
