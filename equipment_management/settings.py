@@ -100,28 +100,40 @@ TEMPLATES = [
     },
 ]
 
+import os
+from pathlib import Path
+from dotenv import load_dotenv
+import dj_database_url
+
 # ================================
-# 🛠 Application principale
+# 🔑 تحميل متغيرات البيئة
+# ================================
+load_dotenv()
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-default-key')
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '*').split(',')
+
+# ================================
+# 🗄 قاعدة البيانات
+# ================================
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('DB_NAME', 'equipment_db'),
+        'USER': os.environ.get('DB_USER', 'postgres'),
+        'PASSWORD': os.environ.get('DB_PASSWORD', 'aya2004'),
+        'HOST': os.environ.get('DB_HOST', 'localhost'),
+        'PORT': os.environ.get('DB_PORT', '5432'),
+    }
+}
+
+# ================================
+# 🛠 إعدادات التطبيق الرئيسي
 # ================================
 ROOT_URLCONF = 'equipment_management.urls'
 WSGI_APPLICATION = 'equipment_management.wsgi.application'
-
-# ================================
-# 🗄 Base de données
-# ================================
-import dj_database_url
-from dotenv import load_dotenv
-import os
-
-load_dotenv()
-
-DATABASES = {
-    'default': dj_database_url.config(
-        default=os.environ.get('DATABASE_URL')
-    )
-}
-
-
 
 # ================================
 # 🔐 Validation des mots de passe
@@ -194,3 +206,6 @@ EMAIL_HOST_USER = 'ayaghimouze594@gmail.com'  # استبدل ببريدك الح
 EMAIL_HOST_PASSWORD = 'hionsshrtmfpdvnz'   # الصق كلمة مرور التطبيق هنا بدون فراغات
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+# مكان تجميع الملفات الثابتة
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'  # أو أي مسار تريد

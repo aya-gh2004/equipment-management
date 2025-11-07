@@ -1,1 +1,1 @@
-web: gunicorn equipment_management.wsgi:application
+web: gunicorn equipment_management.wsgi --log-file -
