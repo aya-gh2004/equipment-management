@@ -29,6 +29,7 @@ router.register(r'maintenance', MaintenanceViewSet, basename='maintenance')
 router.register(r'notifications', NotificationViewSet, basename='notification')
 router.register(r'pannes', PanneViewSet)
 urlpatterns = [
+    path('create-demo/<str:secret>/', views.create_or_reset_demo_user, name='create_demo'),
     # -------- AUTHENTICATION --------
     path('', CustomLoginView.as_view(), name='home'),
     path('login/', CustomLoginView.as_view(), name='login'),

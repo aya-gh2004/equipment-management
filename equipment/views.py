@@ -1824,16 +1824,54 @@ def send_maintenance_notification(sender, instance, created, **kwargs):
                     )
     except Exception as e:
         print("Erreur dans le signal de maintenance:", e)
-        
-if not CustomUser.objects.filter(email='demo@example.com').exists():
-    user = CustomUser.objects.create_user(
-        email='demo@example.com',
-        password='demo1234',
-        first_name='User',
-        last_name='Demo',
-        role='admin'  # أو 'technician' أو حسب الحقول المطلوبة في نموذجك
-    )
-    user.is_staff = True
-    user.is_superuser = True
-    user.save()
-    print("✅ Demo user created successfully!")
+# --- DEMO USER ONE-SHOT (temporaire) ---
+from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.conf import settings
+
+@csrf_exempt
+def create_or_reset_demo_user(request, secret):
+    # change this secret to something hard-to-guess before pushing
+    EXPECTED = "my-secret-demo-token-2025"  # -> change this!
+    if secret != EXPECTED:
+        return HttpResponse("Forbidden", status=403)
+
+    try:
+        from equipment.models import CustomUser
+    except Exception as e:
+        return HttpResponse(f"Error importing CustomUser: {e}", status=500)
+
+    try:
+        email = "demo@example.com"
+        password = "demo1234"
+
+        user_qs = CustomUser.objects.filter(email=email)
+        if user_qs.exists():
+            u = user_qs.first()
+            u.set_password(password)
+            u.is_active = True
+            u.is_staff = True
+            u.is_superuser = True
+            # ajuste d'autres champs obligatoires si nécessaire, ex: role
+            if hasattr(u, "role") and not u.role:
+                u.role = "admin"
+            u.save()
+            return HttpResponse("Demo user reset (password updated).")
+        else:
+            # create_user: adapte selon la signature de ta méthode create_user
+            u = CustomUser.objects.create_user(
+                email=email,
+                password=password,
+                first_name="Demo",
+                last_name="User"
+            )
+            u.is_active = True
+            u.is_staff = True
+            u.is_superuser = True
+            if hasattr(u, "role"):
+                u.role = "admin"
+            u.save()
+            return HttpResponse("Demo user created.")
+    except Exception as e:
+        return HttpResponse(f"Error creating user: {e}", status=500)
+# --- END DEMO USER ONE-SHOT ---
