@@ -1,13 +1,12 @@
 services:
   - type: web
-    name: equipment-management-2
+    name: equipment-management
     env: python
-    region: oregon  # يمكنك تغييره حسب منطقتك
     buildCommand: |
       pip install -r requirements.txt
-      python manage.py collectstatic --noinput
       python manage.py migrate
     startCommand: gunicorn equipment_management.wsgi:application
+
     envVars:
       - key: DJANGO_SETTINGS_MODULE
         value: equipment_management.settings
