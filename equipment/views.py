@@ -1824,12 +1824,16 @@ def send_maintenance_notification(sender, instance, created, **kwargs):
                     )
     except Exception as e:
         print("Erreur dans le signal de maintenance:", e)
-        # --- TEMP CODE for first deploy ---
-from equipment.models import CustomUser
-if not CustomUser.objects.filter(username='demo').exists():
-    user = CustomUser.objects.create_user(username='demo', password='demo1234', first_name='User', last_name='Demo')
+        
+if not CustomUser.objects.filter(email='demo@example.com').exists():
+    user = CustomUser.objects.create_user(
+        email='demo@example.com',
+        password='demo1234',
+        first_name='User',
+        last_name='Demo',
+        role='admin'  # أو 'technician' أو حسب الحقول المطلوبة في نموذجك
+    )
     user.is_staff = True
     user.is_superuser = True
     user.save()
     print("✅ Demo user created successfully!")
-# --- END TEMP CODE ---
