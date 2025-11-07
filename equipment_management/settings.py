@@ -109,16 +109,14 @@ WSGI_APPLICATION = 'equipment_management.wsgi.application'
 # ================================
 # 🗄 Base de données
 # ================================
+import dj_database_url
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'equipment_db',
-        'USER': 'postgres',
-        'PASSWORD': 'aya2004',
-        'HOST': 'localhost',
-        'PORT': '5432',
-    }
+    'default': dj_database_url.config(
+        default=os.environ.get('DATABASE_URL')
+    )
 }
+
 
 # ================================
 # 🔐 Validation des mots de passe
