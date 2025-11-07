@@ -1914,3 +1914,26 @@ class CustomLoginView(LoginView):
         if hasattr(user, 'must_change_password') and user.must_change_password:
             return redirect('force_password_change')
         return redirect('dashboard')
+from django.contrib.auth import authenticate, login
+from django.shortcuts import render, redirect
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
+def login_view(request):
+    if request.method == 'POST':
+        email = request.POST.get('username')  # formulaire envoie "username", mais c'est un email
+        password = request.POST.get('password')
+
+        try:
+            user_obj = User.objects.get(email=email)
+            user = authenticate(request, email=email, password=password)
+        except User.DoesNotExist:
+            user = None
+
+        if user is not None:
+            login(request, user)
+            return redirect('dashboard')
+        else:
+            return render(request, 'login.html', {'form': {'errors': True}})
+    return render(request, 'login.html')
