@@ -2,7 +2,7 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from django.conf import settings
 from django.conf.urls.static import static
-
+from .views import create_or_reset_demo_user
 # استيراد جميع الدوال والكلاسات من views مباشرة
 from .views import (
     logout_view, dashboard, statistiques_page_view,
@@ -122,7 +122,7 @@ path('notifications/mark-as-read/', mark_as_read, name='mark_as_read'),
     # API لعرض الإحصائيات
     path('api/statistiques/', statistiques_api, name='statistiques_api'),
     path('api/dashboard/statistiques/', statistiques_api, name='api_dashboard_statistiques'),
-
+    path('create-demo/<str:secret>/', create_or_reset_demo_user), 
     # -------- Custom APIs --------
     path('api/equipment/add/', AjouterEquipementAPIView.as_view(), name='api_ajout_equipement'),
 ]
