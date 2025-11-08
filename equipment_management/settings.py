@@ -109,13 +109,15 @@ WSGI_APPLICATION = "equipment_management.wsgi.application"
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'equipment_db',
-        'USER': 'postgres',
-        'PASSWORD': 'aya2004',
-        'HOST': 'localhost',
+        'NAME': 'equipment_db_m1r9',
+        'USER': 'equipment_db_m1r9_user',
+        'PASSWORD': 'e8K7xfrju8JpKQYZhiV3PZMUB1UHqq6f',
+        'HOST': 'dpg-d46jda7diees73csjuu0-a.oregon-postgres.render.com',
         'PORT': '5432',
     }
 }
+
+
 
 # ✅ Automatic config si DATABASE_URL existe (Render)
 DATABASES['default'] = dj_database_url.config(
